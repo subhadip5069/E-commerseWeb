@@ -23,6 +23,4 @@ const BannerSchema = new Schema({
     timestamps: true
 });
 
-module.exports = {
-    Banner: mongoose.model("Banner", BannerSchema)
-    }
+module.exports = { Banner: mongoose.model("Banner", BannerSchema)}

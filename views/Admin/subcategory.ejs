@@ -8,7 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
     body {
-      background-image: url(/admin/dashboard.jpg);
+      background-image: url(/admin/18560664_6020520.jpg);
       background-blend-mode: darken;
       background-size: cover;
       background-position: center;
@@ -253,8 +253,8 @@
 
   <div id="mainContent" class="container-fluid">
     <div class="container mt-5">
-      <div class="container mt-5 bg-light p-4 rounded">
-        <h1 class="mb-4 text-center">Subcategories Management</h1>
+      <div class="container mt-5  p-4 rounded" style="background-color: rgba(0, 0, 0, 0.295); backdrop-filter: blur(10px);">
+        <h1 class="mb-4 text-center text-primary">Subcategories Management</h1>
       
         <!-- Success and Error Messages -->
         <% if (success_msg) { %>
@@ -277,7 +277,7 @@
                 <th>#</th>
                 <th>Category</th>
                 <th>Subcategories</th>
-                <th>Actions</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -286,23 +286,39 @@
                   <td><%= index + 1 %></td>
                   <td><strong><%= category.name %></strong></td>
                   <td>
+                   
+                      <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample<%= index%>" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">ALL Subcategory</a>
+                    
+                    <div class="col">
+                      <div class="collapse multi-collapse" id="multiCollapseExample<%= index%>">
+                        <div class="card card-body">
+                          <% subcategories.forEach(subcategory => { %>
+                            <% if (subcategory.category._id.toString() === category._id.toString()) { %>
+                              <div class="row">
+                                <table>
+                                  <tr>
+                                  <td>
+
+                                  <strong><%= subcategory.name %></strong>
+                                  </td>
+                                  <td>
+                                    <form action="/admin/subcategory/delete/<%= subcategory._id%>" method="get">
+                                      <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                  </td>
+                                </tr>
+                                </table>
+
+                              </div>
+                            <% } %>
+                          <% }) %>
+                        </div>
+                      </div>
+                    </div>
                     <!-- Subcategory Dropdown -->
-                    <select class="form-select">
-                      <option disabled selected>Select Subcategory</option>
-                      <% subcategories.forEach(subcategory => { %>
-                        <% if (subcategory.category._id.toString() === category._id.toString()) { %>
-                          <option value="<%= subcategory._id %>">
-                            <%= subcategory.name %>
-                          </option>
-                        <% } %>
-                      <% }) %>
-                    </select>
+                    
                   </td>
-                  <td>
-                    <a href="/admin/subcategory/edit/<%= category._id %>" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="/admin/subcategory/delete/<%= category._id %>" class="btn btn-danger btn-sm"
-                       onclick="return confirm('Are you sure you want to delete this category?');">Delete</a>
-                  </td>
+                  
                 </tr>
               <% }) %>
             </tbody>

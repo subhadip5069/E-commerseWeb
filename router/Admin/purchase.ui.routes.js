@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const purchaseUiController = require('../../controller/admin/order.ui.controller');
+const { AdminauthMiddleware } = require('../../middleware/Auth');
 
-router.get('/',purchaseUiController.getAllPurchases)
-router.get('/user/:userId',purchaseUiController.getPurchasesByUser)
-router.get('/delete/:purchaseId',purchaseUiController.deletePurchase)
+router.get('/',AdminauthMiddleware,purchaseUiController.getAllPurchases)
+router.get('/user/:userId',AdminauthMiddleware,purchaseUiController.getPurchasesByUser)
+router.get('/delete/:purchaseId',AdminauthMiddleware,purchaseUiController.deletePurchase)
 
 module.exports = router

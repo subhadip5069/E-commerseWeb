@@ -17,12 +17,16 @@ class ProductUIController {
         const totalProducts = await product.countDocuments();
         res.render('Admin/product',{products,totalPages:Math.ceil(totalProducts / limit)})
     }
-    createProductUi=async(req,res)=>{
-        const categories=await Category.find({})
-        const subcategories=await Subcategory.find({})
-        res.render('Admin/createproduct',{categories,subcategories})
-    }
-
+  createProductUi = async (req, res) => {
+      try {
+          const categories = await Category.find({});
+          res.render('Admin/createproduct', { categories });
+      } catch (error) {
+          console.error("Error fetching categories:", error);
+          res.status(500).send("Internal Server Error");
+      }
+  };
+  
     updateProductUi=async(req,res)=>{
         const categories=await Category.find({})
         const subcategories=await Subcategory.find({})

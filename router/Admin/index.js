@@ -11,6 +11,8 @@ app.use('/subcategory',require('./subcategory.ui.routes'))
 app.use('/purchase',require('./purchase.ui.routes'))
 app.use('/poster',require('./posters.ui.routes'))
 app.use('/user',require('./users.ui.routes'))
+app.use('/contact',require('./contact.js'))
+app.use('/booking',require('./bookings.ui.routes'))
 
 
 

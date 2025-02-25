@@ -161,96 +161,8 @@
   
   <!-- navbar -->
 
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <div class="container-fluid">
-        <!-- Logo -->
-        <a class="navbar-brand" href="/">
-          <img src="images/logo.svg" alt="logo" class="img-fluid" style="height: 40px;">
-        </a>
-  
-        <!-- Navbar Toggler for Mobile -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-  
-        <!-- Navbar Content -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <!-- Center Section: Navigation Links -->
-          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-uppercase fw-bold">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/about">About</a>
-            </li>
-            <li class="nav-item">
-              <p class="nav-link mb-0" data-bs-toggle="offcanvas" data-bs-target="#categorySidebar" aria-controls="categorySidebar" style="cursor: pointer;">Category</p>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/contactus">Contact Us</a>
-            </li>
-          </ul>
-          
-  
-          <!-- Right Section: Cart, Profile, Login/Signup -->
-          <div class="d-flex align-items-center">
-            <a href="/cart" class="text-dark position-relative me-3">
-              <i class="fa-solid fa-cart-shopping"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
-            </a>
-            <button class="btn p-0 border-0 me-3" id="profileButton" data-bs-toggle="offcanvas" data-bs-target="#profileSidebar" aria-controls="profileSidebar">
-              <img src="/images/sample-image.jpg" alt="Profile" class="rounded-circle" width="40" height="40">
-            </button>
-            <a href="/login" class="btn btn-outline-info me-2">Login</a>
-            <a href="/login" class="btn btn-outline-warning">Signup</a>
-          </div>
-        </div>
-      </div>
-    </nav>
-  
-    <!-- Left Sidebar for Category -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="categorySidebar" aria-labelledby="categorySidebarLabel">
-      <div class="offcanvas-header">
-        <h5 id="categorySidebarLabel">Categories</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <ul class="list-unstyled">
-            <li><a href="/products" class="d-block py-2">Product 1</a></li>
-            <li><a href="/products" class="d-block py-2">Product 2</a></li>
-            <li><a href="/products" class="d-block py-2">Product 3</a></li>
-            <li><a href="/products" class="d-block py-2">Product 4</a></li>
-            <li><a href="/products" class="d-block py-2">Product 5</a></li>
-            <li><a href="/products" class="d-block py-2">Product 6</a></li>
-            <li><a href="/products" class="d-block py-2">Product 7</a></li>
-            <li><a href="/products" class="d-block py-2">Product 8</a></li>
-            <li><a href="/products" class="d-block py-2">Product 9</a></li>
-            <li><a href="/products" class="d-block py-2">Product 10</a></li>
-            <li><a href="/products" class="d-block py-2">Product 12</a></li>
-  
-          
-          </ul>
-      </div>
-    </div>
-  
-    <!-- Right Sidebar for Profile -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="profileSidebar" aria-labelledby="profileSidebarLabel">
-      <div class="offcanvas-header">
-        <h5 id="profileSidebarLabel">Profile</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <p>Welcome, User!</p>
-        <ul class="list-unstyled">
-          <li><a href="/profile" class="d-block py-2">My Profile</a></li>
-          <li><a href="/history" class="d-block py-2">My Orders</a></li>
-          <li><a href="#" class="d-block py-2">Settings</a></li>
-          <li><a href="/login" class="d-block py-2">Logout</a></li>
-        </ul>
-      </div>
-    </div>
-  </header>
+  <%-include('partial/head') %>
+
 
   
   
@@ -265,55 +177,125 @@
    
 <!-- main -->
 <section data-aos="zoom-in">
-    <div class="container my-5">
-        <h2 class="text-center mb-4">My Orders</h2>
-    
-        <!-- Order Card Template (Repeat this for each order) -->
-        <div class="order-card">
-          <div class="row">
+  <div class="container my-5">
+    <h2 class="text-center mb-4">My Orders</h2>
+
+    <% if (orders.length > 0) { %>
+      <% orders.forEach(order => { %>
+        <div class="order-card p-3 mb-3 border rounded">
+          <div class="row align-items-center">
             <div class="col-md-3">
-              <img src="https://via.placeholder.com/150" alt="Product Image" class="img-fluid">
+              <!-- Image Carousel for Product Images -->
+              <div id="carousel<%= order.purchaseid._id %>" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <% if (order.purchaseid.items[0].product.images && order.purchaseid.items[0].product.images.length > 0) { %>
+                    <% order.purchaseid.items[0].product.images.forEach((image, index) => { %>
+                      <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                        <img src="/<%= image %>" class="d-block w-100 rounded" alt="Product Image">
+                      </div>
+                    <% }); %>
+                  <% } else { %>
+                    <div class="carousel-item active">
+                      <img src="https://via.placeholder.com/150" class="d-block w-100 rounded" alt="Default Image">
+                    </div>
+                  <% } %>
+                </div>
+                <a class="carousel-control-prev" href="#carousel<%= order.purchaseid._id %>" role="button" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </a>
+                <a class="carousel-control-next" href="#carousel<%= order.purchaseid._id %>" role="button" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </a>
+              </div>
             </div>
             <div class="col-md-6">
-              <div class="order-title">Product Name: Mountain Adventure Tour</div>
-              <div class="order-status">Status: Delivered</div>
-              <div class="order-date">Delivered on: February 10, 2025</div>
+              <div class="order-title">
+                <strong>Product Name:</strong> <%= order.purchaseid.items[0].product.name || 'Unknown Product' %>
+              </div>
+              <div class="order-description">
+                <strong>Description:</strong> <%= order.purchaseid.items[0].product.description || 'No description available' %>
+              </div>
+            
+              <div class="order-quantity">
+                <strong>Quantity:</strong> <%= order.purchaseid.items[0].quantity || 1 %>
+              </div>
+              <div class="order-pricing">
+                <strong>Launch Price:</strong> <del>  ₹<%= order.purchaseid.items[0].product.launchingPrice || 'N/A' %></del> <br>
+                <strong>Current Price:</strong> ₹ <%= order.purchaseid.items[0].product.currentPrice || 'N/A' %> <br>
+              </div>
+            
+              <div class="order-category">
+                <strong>Category:</strong> 
+                <% if (order.purchaseid.items[0].product.category) { %>
+                  <img src="/<%= order.purchaseid.items[0].product.category.categoryImage %>" class="img-fluid" style="width: 20px;" alt="">
+                  <%= order.purchaseid.items[0].product.category.name %>
+                <% } else { %>
+                  No Category
+                <% } %>
+              </div>
+            
+              <div class="order-subcategory">
+                <strong>Subcategory:</strong>
+                <% if (order.purchaseid.items[0].product.subcategory) { %>
+                  <%= order.purchaseid.items[0].product.subcategory.name %>
+                <% } else { %>
+                  No Subcategory
+                <% } %>
+              </div>
+            
+              <div class="order-status">
+                <strong>Status:</strong> <%= order.purchaseid.status || 'Pending' %>
+              </div>
+              <div class="order-date">
+                <strong>Delivered on:</strong> <%= new Date(order.createdAt).toDateString() %>
+              </div>
+              <div class="order-address">
+                <strong>Shipping Address:</strong> 
+                <%= order.addressid ? `${order.addressid.address}, ${order.addressid.city}, ${order.addressid.state} - ${order.addressid.pincode}` : 'No Address Available' %>
+              </div>
             </div>
-            <div class="col-md-3 text-right">
-              <a href="/orderdetails" class="btn btn-view-details">View Details</a>
+            
+            <div class="col-md-3 text-md-right">
+              <a href="/orderdetails/<%= order._id %>" class="btn btn-primary">View Details</a>
             </div>
           </div>
         </div>
-    
-        <div class="order-card">
-          <div class="row">
-            <div class="col-md-3">
-              <img src="https://via.placeholder.com/150" alt="Product Image" class="img-fluid">
-            </div>
-            <div class="col-md-6">
-              <div class="order-title">Product Name: Beach Relaxation Package</div>
-              <div class="order-status">Status: In Transit</div>
-              <div class="order-date">Expected Delivery: February 15, 2025</div>
-            </div>
-            <div class="col-md-3 text-right">
-              <a href="/orderdetails" class="btn btn-view-details">View Details</a>
-            </div>
-          </div>
-        </div>
-    
-        <!-- Pagination -->
-        <nav aria-label="Page navigation">
-          <ul class="pagination justify-content-center">
-            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-          </ul>
-        </nav>
-      </div>
-    
+      <% }); %>
+    <% } else { %>
+      <p class="text-center mt-4 text-muted fs-4 fw-bold bg-success p-5 rounded">No orders found.</p>
+    <% } %>
+
+    <!-- Pagination -->
+    <% if (totalPages > 1) { %>
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <% if (currentPage > 1) { %>
+            <li class="page-item">
+              <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=5">Previous</a>
+            </li>
+          <% } %>
+
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+              <a class="page-link" href="?page=<%= i %>&limit=5"><%= i %></a>
+            </li>
+          <% } %>
+
+          <% if (currentPage < totalPages) { %>
+            <li class="page-item">
+              <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=5">Next</a>
+            </li>
+          <% } %>
+        </ul>
+      </nav>
+    <% } %>
+  </div>
 </section>
+
+
+
+
+
   
   
   
@@ -386,134 +368,8 @@
       </div>
     </section>
 
-    <footer class="py-5">
-      <div class="container-lg">
-        <div class="row">
+    <%- include('partial/footer.ejs') %>
 
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="footer-menu">
-              <img src="images/logo.svg" width="240" height="70" alt="logo">
-              <div class="social-links mt-3">
-                <ul class="d-flex list-unstyled gap-2">
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#facebook"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#twitter"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#youtube"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#instagram"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#amazon"></use></svg>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Organic</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">About us</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Conditions </a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Our Journals</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Careers</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Affiliate Programme</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Ultras Press</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Quick Links</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Offers</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Discount Coupons</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Stores</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Track Order</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Shop</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Info</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Customer Service</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">FAQ</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Contact</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Privacy Policy</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Returns & Refunds</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Cookie Guidelines</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Delivery Information</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Subscribe Us</h5>
-              <p>Subscribe to our newsletter to get updates about our grand offers.</p>
-              <form class="d-flex mt-3 gap-0" action="index.html">
-                <input class="form-control rounded-start rounded-0 bg-light" type="email" placeholder="Email Address" aria-label="Email Address">
-                <button class="btn btn-dark rounded-end rounded-0" type="submit">Subscribe</button>
-              </form>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-    </footer>
     <div id="footer-bottom">
       <div class="container-lg">
         <div class="row">

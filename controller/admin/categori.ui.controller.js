@@ -1,6 +1,9 @@
 const { Category, Subcategory } = require('../../model/category');
 const flash = require('connect-flash');
 
+const fs = require('fs');
+const path = require('path');
+
 class AdminCategoryController {
   // Show categories with pagination
   async getCategories(req, res) {
@@ -23,23 +26,7 @@ class AdminCategoryController {
       const totalCategories = await Category.countDocuments();
       const totalPages = Math.ceil(totalCategories / limit) || 1;
       
-      // req.flash('success_msg', 'Category created successfully.');
-      // req.flash('error_msg', 'Failed to create category. Category name may already exist.');
-
-      //   if (req.flash('success_msg')) {
-      //     res.locals.success_msg = req.flash('success_msg');
-      //   }
-      //   if (req.flash('error_msg')) {
-      //     res.locals.error_msg = req.flash('error_msg');
-      //   }
-
-      //   if(categories.length === 0) {
-      //     req.flash('error_msg', 'No categories found.');
-      //   }
-
-      //   if(categories.length > 0) {
-      //     req.flash('success_msg', 'Categories fetched successfully.');
-      //   }
+      
 
       res.render('Admin/category', {
         categories,
@@ -62,7 +49,8 @@ class AdminCategoryController {
   async createCategory(req, res) {
     try {
       const { name } = req.body;
-      const category = new Category({ name });
+      const categoryimage = req.file ? req.file.path : null;
+      const category = new Category({ name, categoryImage:categoryimage });
       await category.save();
       // req.flash('success_msg', 'Category created successfully.');
       req.session.success_msg = 'Form created successfully!';
@@ -73,6 +61,36 @@ class AdminCategoryController {
       req.session.error_msg = 'Failed to create category. Category name may already exist.';
       res.redirect('/admin/category');
     }
+  }
+  deleteCategory=async(req, res) =>{
+    try {
+      
+      // old image is deleted
+      const category = await Category.findById(req.params.id);
+      if (category.categoryImage) {
+        const imagePath = path.resolve(category.categoryImage);
+         // Delete the category image if it exists
+         if (category.categoryImage) {
+          fs.unlinkSync(imagePath);
+        }
+      }
+
+      // Delete all subcategories associated with this category
+      await Subcategory.deleteMany({ category: req.params.id });
+
+      // Delete the category
+      await Category.findByIdAndDelete(req.params.id);
+
+      req.session.success_msg = 'Category and all associated subcategories deleted successfully!';
+
+      res.redirect('/admin/category');
+    
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      req.session.error_msg = 'Failed to delete category.';
+      res.redirect('/admin/category');
+    }
+   
   }
 }
 

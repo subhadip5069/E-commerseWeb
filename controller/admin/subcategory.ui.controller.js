@@ -45,13 +45,14 @@ class SubcategoryController {
   async createSubcategory(req, res) {
     try {
       const { name, category } = req.body;
+      const subcategoryimage = req.file ? req.file.path : null;
 
       if (!name || !category) {
         req.session.error_msg = "All fields are required.";
         return res.redirect("/admin/subcategory/create");
       }
 
-      await Subcategory.create({ name, category });
+      await Subcategory.create({ name, category,subcategoryImage:subcategoryimage });
       req.session.success_msg = "Subcategory created successfully.";
       res.redirect("/admin/subcategory");
     } catch (error) {

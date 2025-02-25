@@ -1,33 +1,21 @@
-const mongoose = require("mongoose");
+// model/poster.js
+const { string } = require('joi');
+const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-
-const posterSchema = new Schema({
-    title: {    
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    image: {
-        type: String,
-        required: true
-    },
-    userType: {
-        type: String,
-        enum: ['isVerified', 'notVerified'],
-        default: 'notVerified'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
+const posterSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  Posterimage: { type: String, required: true },
+  usertype: { 
+     type: String,
+     enum: ['true', 'false'],
+     default: 'true',
+      required: true 
     }
 }, {
-    timestamps: true
+  timestamps: true
 });
 
-module.exports = {
-    Poster: mongoose.model("Poster", posterSchema)
-    }
+const Poster = mongoose.model('Poster', posterSchema);
+
+module.exports = Poster;

@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const User = require("../../model/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 
 let otpData = { otp: null, expiresAt: null };
@@ -28,7 +29,7 @@ const transporter = nodemailer.createTransport({
   class UserAuthController {
 // Handle Signup and Send OTP
 signup = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password , phone} = req.body;
   const otp = generateOTP();
 
   try {
@@ -45,6 +46,7 @@ signup = async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      phone,
       isVerified: false,
     });
 
@@ -54,7 +56,7 @@ signup = async (req, res) => {
     const mailOptions = {
       from: `"E-commerce" <${process.env.EMAIL_FROM_ADDRESS}>`,
       to: email,
-      subject: "Verify Your Email - A-world",
+      subject: "Verify Your Email - E-commerce",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
           <div style="text-align: center; margin-bottom: 20px;">
@@ -127,45 +129,47 @@ signup = async (req, res) => {
     }
   };
 
-
-    login = async (req, res) => {
-    
-
+ login = async (req, res) => {
     try {
-      const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.redirect("/login")
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: "User not found!" });
+        }
+
+        if (!user.isVerified) {
+            return res.status(401).json({ message: "Account not verified!" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Incorrect password!" });
+        }
+
+        // Generate JWT Token
+        const token = jwt.sign(
+            { id: user._id, username: user.username, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        // Set token in HTTP-only cookie
+        res.cookie("token", token, {
+          httpOnly: true, // Prevents client-side access for security
+          secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+          sameSite: "Strict", // Ensures requests are made from the same origin
+          maxAge: 48 * 60 * 60 * 1000, // 2 day expiry
+      });
+      
+
+        return res.redirect("/");
+
+    } catch (error) {
+        console.error("Error logging in:", error);
+        return res.redirect("/login");
     }
-
-    // Check if the user is verified
-    if (!user.isVerified) {
-      return res.redirect("/login")
-    }
-
-    // Check password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.redirect("/login")
-    }
-
-    // Successful login
-    if (!req.session) {
-      console.error("Session is not initialized.");
-      return res.redirect("/login");
-    }
-    
-    req.session.user = { id: user._id, username: user.username, role: user.role };
-    
-    res.redirect("/"); 
-     } catch (error) {
-    console.error("Login error:", error);
-    res.redirect("/login");
-     }
-    }
-
-
-
+};
   
   }
   

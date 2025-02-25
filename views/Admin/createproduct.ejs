@@ -8,7 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
     body {
-      background-image: url(/admin/dashboard.jpg);
+      background-image: url(/admin/18560664_6020520.jpg);
       background-blend-mode: darken;
       background-size: cover;
       background-position: center;
@@ -33,7 +33,7 @@
     }
     #mainContent {
       transition: margin-left 0.3s ease;
-      margin-left: 20px;
+      margin-left: 0px;
       min-height: calc(100vh - 56px);
       padding-top: 70px;
       padding-bottom: 70px;
@@ -277,8 +277,8 @@
   <!-- main contant -->
 
   <div id="mainContent" class="container-fluid">
-    <div class="container mt-5">
-      <h1>createProduct</h1>
+    <div class="container mt-5 rounded  p-3" data-aos="zoom-in" style="background-color: rgba(0, 0, 0, 0.267); backdrop-filter: blur(10px);">
+      <h1 class="text-center text-primary">createProduct <hr> </h1>
       <form action="/admin/product/add" method="POST" enctype="multipart/form-data" class="product-form">
         <div class="form-group">
           <label for="name">Product Name</label>
@@ -318,8 +318,22 @@
           
           <!-- category wise sub category -->
               
+            <div class="form-group"> 
+                   <!-- Category Dropdown -->
+         <label for="category">Category:</label>
+         <select id="category" name="category" class="form-control" required>
+          <% categories.forEach(category => { %>
+                <option value="<%= category._id %>"><%= category.name %></option>
+             <% }) %>
             </select>
-          </div>
+
+          <!-- Subcategory Dropdown -->
+          <label for="subcategory">Subcategory:</label>
+          <select id="subcategory" name="subcategory" class="form-control" required>
+                <option value="">Select Subcategory</option>
+          </select>
+
+            </div>
           
           
       
@@ -342,41 +356,48 @@
   <footer>
     <p>&copy; 2025 A-world Admin Panel. All rights reserved.</p>
   </footer>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const categoryDropdown = document.getElementById("category");
-      const subcategoryContainer = document.getElementById("subcategory-container");
-      const subcategoryDropdown = document.getElementById("subcategory");
-    
-      categoryDropdown.addEventListener("change", function () {
-        const selectedCategory = this.value;
-    
-        // Clear previous options
-        subcategoryDropdown.innerHTML = '<option value="">Select Subcategory</option>';
-    
-        if (selectedCategory) {
-          // Filter subcategories that belong to the selected category
-          const filteredSubcategories = subcategoriesData.filter(subcat => subcat.category === selectedCategory);
-    
-          // Add filtered subcategories as options
-          filteredSubcategories.forEach(subcat => {
-            const option = document.createElement("option");
-            option.value = subcat._id;
-            option.textContent = subcat.name;
-            subcategoryDropdown.appendChild(option);
-          });
-    
-          // Show the subcategory dropdown
-          subcategoryContainer.style.display = filteredSubcategories.length > 0 ? "block" : "none";
-        } else {
-          subcategoryContainer.style.display = "none"; // Hide if no category is selected
-        }
-      });
-    });
-    </script>
+  
+<!-- JavaScript for Dynamic Subcategory Loading -->
 <script>
-  const subcategoriesData = <%= JSON.stringify(subcategories).replace(/</g, '\\u003c') %>;
-</script>
+ document.getElementById("category").addEventListener("change", function () {
+  let categoryId = this.value;
+  let subcategoryDropdown = document.getElementById("subcategory");
+
+  // Clear previous options and add default
+  subcategoryDropdown.innerHTML = '<option value="">Select Subcategory</option>';
+
+  if (!categoryId) {
+    subcategoryDropdown.disabled = true;
+    return;
+  }
+
+  fetch(`/admin/subcategory/get-subcategories/${categoryId}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch subcategories");
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.length === 0) {
+        subcategoryDropdown.innerHTML = '<option value="">No subcategories available</option>';
+      } else {
+        data.forEach(subcategory => {
+          let option = document.createElement("option");
+          option.value = subcategory._id;
+          option.textContent = subcategory.name;
+          subcategoryDropdown.appendChild(option);
+        });
+      }
+      subcategoryDropdown.disabled = false;
+    })
+    .catch(error => {
+      console.error("Error fetching subcategories:", error);
+      subcategoryDropdown.innerHTML = '<option value="">Error loading subcategories</option>';
+    });
+});
+
+  </script>
  
     
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>    

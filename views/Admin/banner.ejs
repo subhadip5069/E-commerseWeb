@@ -9,7 +9,8 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
     body {
-      background-image: url(/admin/dashboard.jpg);
+      background-image: url(/admin/18560664_6020520.jpg);
+
       background-blend-mode: darken;
       background-size: cover;
       background-position: center;
@@ -274,8 +275,8 @@
   <!-- main contant -->
 <!-- add aos -->
   <div id="mainContent" class="container-fluid" >
-    <div class="container mt-5">
-    <div class="container mt-5 bg-light p-4 rounded shadow"  data-aos="zoom-in">
+    <div class="container mt-5  p-4 rounded shadow"  data-aos="zoom-in" style="background-color: rgba(0, 0, 0, 0.377); backdrop-filter: blur(10px);">
+    <div class="container mt-5" >
   
       <h1 class="mb-4 text-center text-primary">Banners List <hr></h1>
     
@@ -286,13 +287,13 @@
         <div class="alert alert-danger"><%= error_msg %></div>
       <% } %>
       <!-- Create Banner Button -->
-      <% if (banners.length === 0) { %>
+     
         <div class="text-end mb-3">
           <a href="/admin/banner/create" class="btn btn-success">
             <i class="fas fa-plus"></i> Create New Banner
           </a>
         </div>
-      <% }  %>
+      
     
         <div class="row">
           <% banners.forEach(banner => { %>
