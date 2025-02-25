@@ -8,6 +8,12 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    phone: {
+      type: Number,
+      required: true,
+      unique: true,
+      index: true,  // Add index for better performance
+    },
     email: {
       type: String,
       required: true,
@@ -28,10 +34,6 @@ const userSchema = new Schema(
       type: String,
       enum: ['active', 'inactive'],
       default: 'active',
-    },
-    profileImage: {
-      type: String,
-      default: null,
     },
     orderHistory: {
       type: Array,

@@ -150,215 +150,53 @@
   
   <!-- navbar -->
 
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <div class="container-fluid">
-        <!-- Logo -->
-        <a class="navbar-brand" href="/">
-          <img src="images/logo.svg" alt="logo" class="img-fluid" style="height: 40px;">
-        </a>
+  <%-include('partial/head') %>
+<!-- banner -->
   
-        <!-- Navbar Toggler for Mobile -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-  
-        <!-- Navbar Content -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <!-- Center Section: Navigation Links -->
-          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-uppercase fw-bold">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/about">About</a>
-            </li>
-            <li class="nav-item">
-              <p class="nav-link mb-0" data-bs-toggle="offcanvas" data-bs-target="#categorySidebar" aria-controls="categorySidebar" style="cursor: pointer;">Category</p>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/contactus">Contact Us</a>
-            </li>
-          </ul>
-          
-  
-          <!-- Right Section: Cart, Profile, Login/Signup -->
-          <div class="d-flex align-items-center">
-            <a href="/cart" class="text-dark position-relative me-3">
-              <i class="fa-solid fa-cart-shopping"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
-            </a>
-            <button class="btn p-0 border-0 me-3" id="profileButton" data-bs-toggle="offcanvas" data-bs-target="#profileSidebar" aria-controls="profileSidebar">
-              <img src="/images/sample-image.jpg" alt="Profile" class="rounded-circle" width="40" height="40">
-            </button>
-            <a href="/login" class="btn btn-outline-info me-2">Login</a>
-            <a href="/login" class="btn btn-outline-warning">Signup</a>
-          </div>
-        </div>
-      </div>
-    </nav>
-  
-    <!-- Left Sidebar for Category -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="categorySidebar" aria-labelledby="categorySidebarLabel">
-      <div class="offcanvas-header">
-        <h5 id="categorySidebarLabel">Categories</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <ul class="list-unstyled">
-            <li><a href="/products" class="d-block py-2">Product 1</a></li>
-            <li><a href="/products" class="d-block py-2">Product 2</a></li>
-            <li><a href="/products" class="d-block py-2">Product 3</a></li>
-            <li><a href="/products" class="d-block py-2">Product 4</a></li>
-            <li><a href="/products" class="d-block py-2">Product 5</a></li>
-            <li><a href="/products" class="d-block py-2">Product 6</a></li>
-            <li><a href="/products" class="d-block py-2">Product 7</a></li>
-            <li><a href="/products" class="d-block py-2">Product 8</a></li>
-            <li><a href="/products" class="d-block py-2">Product 9</a></li>
-            <li><a href="/products" class="d-block py-2">Product 10</a></li>
-            <li><a href="/products" class="d-block py-2">Product 12</a></li>
-          </ul>
-      </div>
-    </div>
-  
-    <!-- Right Sidebar for Profile -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="profileSidebar" aria-labelledby="profileSidebarLabel">
-      <div class="offcanvas-header">
-        <h5 id="profileSidebarLabel">Profile</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <p>Welcome, User!</p>
-        <ul class="list-unstyled">
-          <li><a href="/profile" class="d-block py-2">My Profile</a></li>
-          <li><a href="/history" class="d-block py-2">My Orders</a></li>
-          <li><a href="#" class="d-block py-2">Settings</a></li>
-          <li><a href="/login" class="d-block py-2">Logout</a></li>
-        </ul>
-      </div>
-    </div>
-  </header>
-
-  
-  
+<%-include('partial/banner') %>
  
   
   
   <!-- nav bar end -->
     
-    <section style="background-image: url('images/banner-1.jpg');background-repeat: no-repeat;background-size: cover;">
-      <div class="container-lg">
-        <div class="row">
-          <div class="col-lg-6 pt-5 mt-5">
-            <h2 class="display-1 ls-1"><span class="fw-bold text-primary">Organic</span> Foods at your <span class="fw-bold">Doorsteps</span></h2>
-            <p class="fs-4">Dignissim massa diam elementum.</p>
-            <div class="d-flex gap-3">
-              <a href="#" class="btn btn-primary text-uppercase fs-6 rounded-pill px-4 py-3 mt-3">Start Shopping</a>
-              <a href="#" class="btn btn-dark text-uppercase fs-6 rounded-pill px-4 py-3 mt-3">Join Now</a>
-            </div>
-            <div class="row my-5">
-              <div class="col">
-                <div class="row text-dark">
-                  <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">14k+</p></div>
-                  <div class="col"><p class="text-uppercase lh-sm mb-0">Product Varieties</p></div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="row text-dark">
-                  <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">50k+</p></div>
-                  <div class="col"><p class="text-uppercase lh-sm mb-0">Happy Customers</p></div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="row text-dark">
-                  <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">10+</p></div>
-                  <div class="col"><p class="text-uppercase lh-sm mb-0">Store Locations</p></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="row row-cols-1 row-cols-sm-3 row-cols-lg-3 g-0 justify-content-center">
-          <div class="col">
-            <div class="card border-0 bg-primary rounded-0 p-4 text-light">
-              <div class="row">
-                <div class="col-md-3 text-center">
-                  <svg width="60" height="60"><use xlink:href="#fresh"></use></svg>
-                </div>
-                <div class="col-md-9">
-                  <div class="card-body p-0">
-                    <h5 class="text-light">Fresh from farm</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipi elit.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <div class="card border-0 bg-secondary rounded-0 p-4 text-light">
-              <div class="row">
-                <div class="col-md-3 text-center">
-                  <svg width="60" height="60"><use xlink:href="#organic"></use></svg>
-                </div>
-                <div class="col-md-9">
-                  <div class="card-body p-0">
-                    <h5 class="text-light">100% Organic</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipi elit.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <div class="card border-0 bg-danger rounded-0 p-4 text-light">
-              <div class="row">
-                <div class="col-md-3 text-center">
-                  <svg width="60" height="60"><use xlink:href="#delivery"></use></svg>
-                </div>
-                <div class="col-md-9">
-                  <div class="card-body p-0">
-                    <h5 class="text-light">Free delivery</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipi elit.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      
-      </div>
-    </section>
+    
 
    
    
 <!-- main -->
-<section class="container-fluid py-5" data-aos="zoom-in" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-once="true" data-aos-anchor="#your-element">
-    <div class="container">
-      <div class="row align-items-center">
-        <!-- Image Section -->
-        <div class="col-md-6 mb-4 mb-md-0">
-          <img src="/ui/background.jpg" alt="About Us" class="img-fluid rounded shadow">
-        </div>
-  
-        <!-- Text Section -->
-        <div class="col-md-6">
-          <div class="card about-card p-4">
-            <div class="card-body text-center">
-              <h3 style="color: rgb(0, 0, 0);">About Us</h3>
-              <p class="mt-3">
-                Welcome to A-world! We are a travel website dedicated to helping you explore and book your dream trips. Our mission is to make travel planning seamless and enjoyable. Whether you're looking for adventures or relaxation, we've got you covered. Join us on this exciting journey!
-              </p>
-              <p>
-                Our team is passionate about travel and is always here to help you find the perfect destination. Start your journey with us and discover a world full of possibilities!
-              </p>
-              <a href="/contact" class="btn btn-primary mt-3">Contact Us</a>
+<% if (abouts && abouts.length > 0) { %>
+  <% for (let i = 0; i < abouts.length; i++) { %>
+    <section class="container-fluid py-5" data-aos="zoom-in" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-once="true" data-aos-anchor="#your-element">
+        <div class="container">
+          <div class="row align-items-center">
+            
+            <!-- Image Section -->
+            
+              <img src="/<%= abouts[i].Aboutimage %>" alt="About Image" class="img-fluid col-md-6 rounded shadow">
+          
+      
+            <!-- Text Section -->
+            <div class="col-md-6">
+              <div class="card about-card p-4">
+                <div class="card-body text-center">
+                  <h3 style="color: rgb(0, 0, 0);"><%= abouts[i].title %></h3>
+                  <p class="mt-3">
+                    <%= abouts[i].description %>
+                    <br>
+                  </p>
+                  <a href="/contactus" class="btn btn-primary mt-3">Contact Us</a>
+                </div>
+              </div>
             </div>
+            
           </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
+  <% } %>
+<% } else { %>
+  <p class="text-center text-muted">No about section content available.</p>
+<% } %>
+
   
 
 
@@ -452,134 +290,8 @@
       </div>
     </section>
 
-    <footer class="py-5">
-      <div class="container-lg">
-        <div class="row">
+    <%- include('partial/footer.ejs') %>
 
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="footer-menu">
-              <img src="images/logo.svg" width="240" height="70" alt="logo">
-              <div class="social-links mt-3">
-                <ul class="d-flex list-unstyled gap-2">
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#facebook"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#twitter"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#youtube"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#instagram"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#amazon"></use></svg>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Organic</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">About us</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Conditions </a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Our Journals</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Careers</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Affiliate Programme</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Ultras Press</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Quick Links</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Offers</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Discount Coupons</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Stores</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Track Order</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Shop</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Info</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Customer Service</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">FAQ</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Contact</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Privacy Policy</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Returns & Refunds</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Cookie Guidelines</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Delivery Information</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Subscribe Us</h5>
-              <p>Subscribe to our newsletter to get updates about our grand offers.</p>
-              <form class="d-flex mt-3 gap-0" action="index.html">
-                <input class="form-control rounded-start rounded-0 bg-light" type="email" placeholder="Email Address" aria-label="Email Address">
-                <button class="btn btn-dark rounded-end rounded-0" type="submit">Subscribe</button>
-              </form>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-    </footer>
     <div id="footer-bottom">
       <div class="container-lg">
         <div class="row">

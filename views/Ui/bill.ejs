@@ -122,25 +122,25 @@
                 <h6 class="my-0">Growers cider</h6>
                 <small class="text-body-secondary">Brief description</small>
               </div>
-              <span class="text-body-secondary">$12</span>
+              <span class="text-body-secondary">₹12</span>
             </li>
             <li class="list-group-item d-flex justify-content-between lh-sm">
               <div>
                 <h6 class="my-0">Fresh grapes</h6>
                 <small class="text-body-secondary">Brief description</small>
               </div>
-              <span class="text-body-secondary">$8</span>
+              <span class="text-body-secondary">₹8</span>
             </li>
             <li class="list-group-item d-flex justify-content-between lh-sm">
               <div>
                 <h6 class="my-0">Heinz tomato ketchup</h6>
                 <small class="text-body-secondary">Brief description</small>
               </div>
-              <span class="text-body-secondary">$5</span>
+              <span class="text-body-secondary">₹5</span>
             </li>
             <li class="list-group-item d-flex justify-content-between">
               <span>Total (USD)</span>
-              <strong>$20</strong>
+              <strong>₹20</strong>
             </li>
           </ul>
   
@@ -151,96 +151,8 @@
   
   <!-- navbar -->
 
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <div class="container-fluid">
-        <!-- Logo -->
-        <a class="navbar-brand" href="/">
-          <img src="images/logo.svg" alt="logo" class="img-fluid" style="height: 40px;">
-        </a>
-  
-        <!-- Navbar Toggler for Mobile -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-  
-        <!-- Navbar Content -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <!-- Center Section: Navigation Links -->
-          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-uppercase fw-bold">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/about">About</a>
-            </li>
-            <li class="nav-item">
-              <p class="nav-link mb-0" data-bs-toggle="offcanvas" data-bs-target="#categorySidebar" aria-controls="categorySidebar" style="cursor: pointer;">Category</p>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/contactus">Contact Us</a>
-            </li>
-          </ul>
-          
-  
-          <!-- Right Section: Cart, Profile, Login/Signup -->
-          <div class="d-flex align-items-center">
-            <a href="/cart" class="text-dark position-relative me-3">
-              <i class="fa-solid fa-cart-shopping"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
-            </a>
-            <button class="btn p-0 border-0 me-3" id="profileButton" data-bs-toggle="offcanvas" data-bs-target="#profileSidebar" aria-controls="profileSidebar">
-              <img src="/images/sample-image.jpg" alt="Profile" class="rounded-circle" width="40" height="40">
-            </button>
-            <a href="/login" class="btn btn-outline-info me-2">Login</a>
-            <a href="/login" class="btn btn-outline-warning">Signup</a>
-          </div>
-        </div>
-      </div>
-    </nav>
-  
-    <!-- Left Sidebar for Category -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="categorySidebar" aria-labelledby="categorySidebarLabel">
-      <div class="offcanvas-header">
-        <h5 id="categorySidebarLabel">Categories</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <ul class="list-unstyled">
-            <li><a href="/products" class="d-block py-2">Product 1</a></li>
-            <li><a href="/products" class="d-block py-2">Product 2</a></li>
-            <li><a href="/products" class="d-block py-2">Product 3</a></li>
-            <li><a href="/products" class="d-block py-2">Product 4</a></li>
-            <li><a href="/products" class="d-block py-2">Product 5</a></li>
-            <li><a href="/products" class="d-block py-2">Product 6</a></li>
-            <li><a href="/products" class="d-block py-2">Product 7</a></li>
-            <li><a href="/products" class="d-block py-2">Product 8</a></li>
-            <li><a href="/products" class="d-block py-2">Product 9</a></li>
-            <li><a href="/products" class="d-block py-2">Product 10</a></li>
-            <li><a href="/products" class="d-block py-2">Product 12</a></li>
-  
-          
-          </ul>
-      </div>
-    </div>
-  
-    <!-- Right Sidebar for Profile -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="profileSidebar" aria-labelledby="profileSidebarLabel">
-      <div class="offcanvas-header">
-        <h5 id="profileSidebarLabel">Profile</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <p>Welcome, User!</p>
-        <ul class="list-unstyled">
-          <li><a href="/profile" class="d-block py-2">My Profile</a></li>
-          <li><a href="/history" class="d-block py-2">My Orders</a></li>
-          <li><a href="#" class="d-block py-2">Settings</a></li>
-          <li><a href="/login" class="d-block py-2">Logout</a></li>
-        </ul>
-      </div>
-    </div>
-  </header>
+  <%-include('partial/head') %>
+
 
   
   
@@ -255,78 +167,171 @@
    
 <!-- main -->
 <section data-aos="zoom-in">
-    <div class="container my-5">
-        <div class="invoice-header text-center">
-            <img src="images/logo.svg" width="240" height="70" alt="logo">
-          <p> your total amaount of product name</p>
-        </div>
-    
-        <div class="row my-4">
+  <div class="container my-5">
+      <div class="invoice-header text-center">
+          <img src="/images/logo.svg" width="240" height="70" alt="logo">
+          <p>Your total amount for <%= purchase.items.length %> products</p>
+      </div>
+
+      <div class="row my-4">
           <div class="col-md-6">
-            <h5>Billing Information</h5>
-            <p>Name: John Doe</p>
-            <p>Email: john.doe@example.com</p>
-            <p>Address: 123 Main Street, City, Country</p>
+              <h5>Billing Information</h5>
+              <p><strong>Name:</strong> <%= purchase.user.username %></p>
+              <p><strong>Email:</strong> <%= purchase.user.email %></p>
+              
+              <!-- Address Selection -->
+              
+
+              <!-- Display Selected Address -->
+              <p class="mt-2"><strong> Current Address:</strong> 
+                  <span id="selectedAddress">
+                      <% if (address && address.length > 0) { %>
+                          <%= address[0].street %>, <%= address[0].city %>, <%= address[0].country %>
+                      <% } else { %>
+                          No address found
+                      <% } %>
+                  </span>
+              </p>
+
+              <!-- Add New Address Button -->
+              <a href="/address/" class="btn btn-primary" data-toggle="modal" data-target="#addAddressModal">
+                  <i class="fa-solid fa-plus"></i> Add New Address
+              </a>
           </div>
+
           <div class="col-md-6 text-md-right">
-            <h5>Order Details</h5>
-            <p>Order ID: #AW123456</p>
-            <p>Order Date: February 12, 2025</p>
+              <h5>Order Details</h5>
+              <p><strong>Order ID:</strong> #<%= purchase._id %></p>
+              <p><strong>Order Date:</strong> <%= new Date(purchase.createdAt).toLocaleDateString() %></p>
           </div>
-        </div>
-    
-        <div class="invoice-details">
+      </div>
+
+      <div class="invoice-details">
           <h5 class="mb-3">Order Summary</h5>
           <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>Mountain Adventure Tour</td>
-                <td>1</td>
-                <td>$500</td>
-                <td>$500</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Beach Relaxation Package</td>
-                <td>2</td>
-                <td>$300</td>
-                <td>$600</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>City Exploration</td>
-                <td>1</td>
-                <td>$400</td>
-                <td>$400</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <th colspan="4" class="text-right">Grand Total</th>
-                <th>$1500</th>
-              </tr>
+              <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>Product</th>
+                      <th>Quantity</th>
+                      <th>Unit Price</th>
+                      <th>Total</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% purchase.items.forEach((item, index) => { %>
+                      <tr>
+                          <td><%= index + 1 %></td>
+                          <td><%= item.product.name %></td>
+                          <td><%= item.quantity %></td>
+                          <td>₹<%= item.price %></td>
+                          <td>₹<%= item.quantity * item.price %></td>
+                      </tr>
+                  <% }); %>
+              </tbody>
+              <tfoot>
+                <tr>
+                    <th colspan="4" class="text-right">Subtotal</th>
+                    <th>₹<%= purchase.subtotal.toFixed(2) %></th>
+                </tr>
+                <tr>
+                    <th colspan="4" class="text-right">GST (5%)</th>
+                    <th>₹<%= purchase.gst.toFixed(2) %></th>
+                </tr>
+                <tr>
+                    <th colspan="4" class="text-right">SGST (5%)</th>
+                    <th>₹<%= purchase.sgst.toFixed(2) %></th>
+                </tr>
+                <tr>
+                    <th colspan="4" class="text-right">Shipping Charge</th>
+                    <th>₹<%= (purchase.subtotal < 500 ? (purchase.shippingCharge || 70) : 0).toFixed(2) %></th>
+                </tr>
+                <tr>
+                    <th colspan="4" class="text-right">Grand Total</th>
+                    <th>
+                        ₹<%= (purchase.subtotal + purchase.gst + purchase.sgst + 
+                               (purchase.subtotal < 500 ? (purchase.shippingCharge || 70) : 0)).toFixed(2) %>
+                    </th>
+                </tr>
             </tfoot>
+            
+            
           </table>
-        </div>
-    
-        <div class="text-center mt-4">
-          <p>Thank you for choosing Organic We hope you have a great trip.</p>
-          <button class="btn btn-primary" onclick="window.print()">Print Invoice</button>
-          <button class="btn btn-outline-info">Pay Now </button>
-        </div>
       </div>
+
+      <form action="/bill/pay" method="POST" id="paymentForm" class="row d-flex justify-content-end mt-4">
+        <input type="hidden" name="purchaseid" id="purchaseid" value="<%= purchase._id %>">
+
+
+        <label for="addressSelect"> <strong>Change Address: </strong></label>
     
+        <select id="addressSelect" class="form-select col-6" name="addressid" aria-label="Select Address" required>
+            <% if (address && address.length > 0) { %>
+                <% address.forEach((addr) => { %>
+                    <option value="<%= addr._id %>">
+                        city - <%= addr.city %>, 
+                        country - <%= addr.country %>, 
+                        zipcode - <%= addr.pincode %>, 
+                        ph - <%= addr.phnumber %>, 
+                        state - <%= addr.state %>
+                    </option>
+                <% }) %>
+            <% } else { %>
+                <option>No address found</option>
+            <% } %>
+        </select>
+    
+        <!-- Pass all cart items to delete after payment -->
+        <% if (cart && cart.length > 0) { %>
+            <% cart.forEach((item) => { %>
+                <input type="hidden" name="cartItems[]" value="<%= item._id %>">
+            <% }) %>
+        <% } %>
+    
+        <button class="btn btn-outline-info ms-2 col-md-4" type="submit">Pay Now</button>
+    </form>
+    
+
+      <div class="text-center mt-4">
+          <p>Thank you for choosing A-World. We hope you have a great trip.</p>
+          <button class="btn btn-primary" onclick="window.print()">Print Invoice</button>
+          
+      </div>
+  </div>
 </section>
+
+<!-- Add New Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addAddressForm">
+                    <div class="form-group">
+                        <label>Street</label>
+                        <input type="text" class="form-control" id="street" required>
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" class="form-control" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" class="form-control" id="country" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Address</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
   
   
   
@@ -399,134 +404,8 @@
       </div>
     </section>
 
-    <footer class="py-5">
-      <div class="container-lg">
-        <div class="row">
+    <%- include('partial/footer.ejs') %>
 
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="footer-menu">
-              <img src="images/logo.svg" width="240" height="70" alt="logo">
-              <div class="social-links mt-3">
-                <ul class="d-flex list-unstyled gap-2">
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#facebook"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#twitter"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#youtube"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#instagram"></use></svg>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="btn btn-outline-light">
-                      <svg width="16" height="16"><use xlink:href="#amazon"></use></svg>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Organic</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">About us</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Conditions </a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Our Journals</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Careers</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Affiliate Programme</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Ultras Press</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Quick Links</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Offers</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Discount Coupons</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Stores</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Track Order</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Shop</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Info</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Customer Service</h5>
-              <ul class="menu-list list-unstyled">
-                <li class="menu-item">
-                  <a href="#" class="nav-link">FAQ</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Contact</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Privacy Policy</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Returns & Refunds</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Cookie Guidelines</a>
-                </li>
-                <li class="menu-item">
-                  <a href="#" class="nav-link">Delivery Information</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="footer-menu">
-              <h5 class="widget-title">Subscribe Us</h5>
-              <p>Subscribe to our newsletter to get updates about our grand offers.</p>
-              <form class="d-flex mt-3 gap-0" action="index.html">
-                <input class="form-control rounded-start rounded-0 bg-light" type="email" placeholder="Email Address" aria-label="Email Address">
-                <button class="btn btn-dark rounded-end rounded-0" type="submit">Subscribe</button>
-              </form>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-    </footer>
     <div id="footer-bottom">
       <div class="container-lg">
         <div class="row">

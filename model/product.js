@@ -49,6 +49,7 @@ const ProductSchema = new mongoose.Schema(
         message: 'You can upload up to 10 images only.',
       },
     },
+    
     slug: {
       type: String,
       unique: true,

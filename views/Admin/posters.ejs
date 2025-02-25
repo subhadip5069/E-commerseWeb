@@ -8,7 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
     body {
-      background-image: url(/admin/dashboard.jpg);
+      background-image: url(/admin/18560664_6020520.jpg);
       background-blend-mode: darken;
       background-size: cover;
       background-position: center;
@@ -252,10 +252,78 @@
   <!-- main contant -->
 
   <div id="mainContent" class="container-fluid">
-    <div class="container mt-5">
-      <h1>banner</h1>
+    <div class="container mt-5 rounded p-4" data-aos="zoom-in" style="background-color: rgba(0, 0, 0, 0.295); backdrop-filter: blur(10px);">
+      <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center" style="background-color: black; padding: 30px;">
+            <h2 class="text-primary">Poster Gallery</h2>
+            <a href="/admin/poster/create" class="btn btn-success">➕ Create Poster</a>
+        </div>
+
+        <!-- Flash Messages -->
+        <% if (success_msg) { %>
+            <div class="alert alert-success"><%= success_msg %></div>
+        <% } %>
+        <% if (error_msg) { %>
+            <div class="alert alert-danger"><%= error_msg %></div>
+        <% } %>
+
+        <!-- Posters Grid -->
+        <div class="row mt-3">
+            <% if (posters.length > 0) { %>
+                <% posters.forEach(poster => { %>
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow">
+                            <img src="/<%= poster.Posterimage %>" class="card-img-top" alt="Poster Image">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= poster.title %></h5>
+                                <p class="card-text"><%= poster.description.substring(0, 80) %>...</p>
+                                
+                                  <% if (poster.usertype === "true") { %> 
+                                    <p>Signup User</p>
+                                  <% } else { %>
+                                    <p>All User</p>
+                                  <% } %>
+                                 
+                               
+                               
+                                <a href="/admin/poster/edit/<%= poster._id %>" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
+                                <a href="/admin/poster/delete/<%= poster._id %>" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p class="text-center text-danger">No posters found.</p>
+            <% } %>
+        </div>
+
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination justify-content-center">
+                <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="/admin/poster?page=<%= currentPage - 1 %>">Previous</a>
+                    </li>
+                <% } %>
+
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="/admin/poster?page=<%= i %>"><%= i %></a>
+                    </li>
+                <% } %>
+
+                <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="/admin/poster?page=<%= currentPage + 1 %>">Next</a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+
     </div>
-  </div>
+    </div>
+</div>
+
   <!-- main contant -->
 
   <footer>

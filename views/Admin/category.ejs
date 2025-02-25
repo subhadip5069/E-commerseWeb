@@ -9,7 +9,8 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
     body {
-      background-image: url(/admin/dashboard.jpg);
+      background-image: url(/admin/18560664_6020520.jpg);
+
       background-blend-mode: darken;
       background-size: cover;
       background-position: center;
@@ -280,11 +281,11 @@
   <!-- main contant -->
 
   <div id="mainContent" class="container-fluid">
-    <div class="container mt-5" data-aos="zoom-in">
+    <div class="container mt-5  p-4 rounded" data-aos="zoom-in" style="background-color: rgba(0, 0, 0, 0.295); backdrop-filter: blur(10px);">
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-12 mb-4 center ">
         <div class="card" style="background-color: #b9b9b9; padding: 30px;">
-          <h1 class="text-center">Category Management <hr></h1>
+          <h1 class="text-center text-primary">Category Management <hr></h1>
         
           <!-- Success and Error Messages -->
           <!-- Success and Error Messages -->
@@ -298,18 +299,22 @@
       
           <!-- Create Category Form -->
           
-          <form action="/admin/category/add" method="POST" class="mb-4">
+          <form action="/admin/category/add" method="POST" class="mb-4" enctype="multipart/form-data">
             <div class="form-group">
               <label for="categoryName">Category Name</label>
               <input type="text" name="name" id="categoryName" class="form-control form-control-lg py-2" placeholder="Enter category name" required>
             </div>
+            <div class="form-group">
+              <label for=" categoryImage" >category Image:</label>
+              <input type="file" name="categoryImage" id="categoryImage" class="form-control form-control-lg py-2" required>
+              </div>
             <button type="submit" class="btn btn-primary"style=margin-top:30px>Add Category</button>
           </form>
       
           <!-- Category List with Subcategories -->
           <h3>Category List</h3>
           <table class="table table-bordered" style=" border-radius: 20px;" >
-            <thead class="thead-dark">
+            <thead class="thead-hover">
               <tr>
                 <th>Category Name</th>
                 <th>Action</th>
@@ -323,10 +328,10 @@
               <% } else { %>
                 <% categories.forEach(category => { %>
                   <tr>
-                    <td><strong><%= category.name %></strong></td>
+                    <td><img src="/<%= category.categoryImage %>" class="category-image" alt="" style = "width: 50px; height: 50px; border-radius: 50%;"><strong><%= category.name %></strong></td>
                     <td>
                       <a href="/admin/category/edit/<%= category._id %>" class="btn btn-sm btn-warning">Edit</a>
-                      <form action="/admin/category/delete/<%= category._id %>" method="POST" style="display:inline;">
+                      <form action="/admin/category/delete/<%= category._id %>" method="get" style="display:inline;">
                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this category?')">Delete</button>
                       </form>
                     </td>
