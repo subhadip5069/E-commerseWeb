@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url(/admin/dashboard.jpg);
+      background-blend-mode: darken;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+    #sidebar {
+      text-align: center;
+      width: 250px;
+      background-color: #0000007c;
+      backdrop-filter: blur(10px);
+      height: 100vh;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    #sidebar.hidden {
+      transform: translateX(-100%);
+    }
+    #mainContent {
+      transition: margin-left 0.3s ease;
+      margin-left: 20px;
+      min-height: calc(100vh - 56px);
+      padding-top: 70px;
+      padding-bottom: 70px;
+    }
+    #mainContent.full-width {
+      margin-left: 0;
+    }
+    #sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 251, 0, 0.7);
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.1s ease;
+    }
+    #sidebar .nav-link:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+    }
+    footer {
+      background-color: black;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #001aff31; backdrop-filter: blur(10px);">
+    <div class="container-fluid">
+      <!-- Sidebar Toggle Button -->
+      <button class="btn btn-dark me-3" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <!-- Brand Name -->
+      <a class="navbar-brand" href="#">Admin Panel</a>
+      
+      <!-- Search Form -->
+      <form class="d-none d-md-flex ms-auto me-3" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-light" type="submit">Search</button>
+      </form>
+      
+      <!-- Notification and Profile Dropdowns -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Notification Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bell"></i>
+            <span class="badge bg-danger">3</span> <!-- Notification count -->
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+            <li><a class="dropdown-item" href="#">New booking request</a></li>
+            <li><a class="dropdown-item" href="#">New comment on blog</a></li>
+            <li><a class="dropdown-item" href="#">System update available</a></li>
+          </ul>
+        </li>
+  
+        <!-- Profile Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://via.placeholder.com/30" alt="Profile" class="rounded-circle me-2" width="30" height="30">
+            <span>Admin</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+            <li><a class="dropdown-item" href="#">My Profile</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+
+  <!-- Sidebar -->
+  <nav id="sidebar" class="d-flex flex-column flex-shrink">
+    <div class="p-3">
+      <h5 class="text-white">Menu</h5>
+    </div>
+    <div class="sidebar-sticky flex-grow-1">
+      <hr class="text-white">
+      <ul class="nav flex-column">
+        <!-- Dashboard -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="dashboardDropdown">
+            <li><a class="dropdown-item" href="#">View Dashboard</a></li>
+          </ul>
+        </li>
+      
+        <!-- New User -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="newUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-plus"></i> New User
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="newUserDropdown">
+            <li><a class="dropdown-item" href="#">Create New User</a></li>
+            <li><a class="dropdown-item" href="#">Verify User</a></li>
+            <li><a class="dropdown-item" href="#">List New Users</a></li>
+          </ul>
+        </li>
+      
+        <!-- Products -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-box"></i> Products
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+            <li><a class="dropdown-item" href="#">Create Product</a></li>
+            <li><a class="dropdown-item" href="#">Update Product</a></li>
+            <li><a class="dropdown-item" href="#">List Products</a></li>
+          </ul>
+        </li>
+      
+        <!-- Payments -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-wallet"></i> Payments
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="paymentsDropdown">
+            <li><a class="dropdown-item" href="#">View Payments</a></li>
+            <li><a class="dropdown-item" href="#">Refund Requests</a></li>
+            <li><a class="dropdown-item" href="#">Payment Settings</a></li>
+          </ul>
+        </li>
+      
+        <!-- Categories -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-tags"></i> Categories
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="#">Create Category</a></li>
+            <li><a class="dropdown-item" href="#">Update Category</a></li>
+            <li><a class="dropdown-item" href="#">List Categories</a></li>
+            <li class="dropdown-divider"></li>
+            <li class="dropdown-submenu">
+              <a class="dropdown-item dropdown-toggle" href="#">Sub Category</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Create Sub Category</a></li>
+                <li><a class="dropdown-item" href="#">Update Sub Category</a></li>
+                <li><a class="dropdown-item" href="#">List Sub Categories</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      
+        <!-- Orders -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-shopping-cart"></i> Orders
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+            <li><a class="dropdown-item" href="#">Create Order</a></li>
+            <li><a class="dropdown-item" href="#">Update Order</a></li>
+            <li><a class="dropdown-item" href="#">List Orders</a></li>
+          </ul>
+        </li>
+        
+        <!-- Customers -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="customersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user"></i> Customers
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="customersDropdown">
+            <li><a class="dropdown-item" href="#">Create Customer</a></li>
+            <li><a class="dropdown-item" href="#">Update Customer</a></li>
+            <li><a class="dropdown-item" href="#">List Customers</a></li>
+          </ul>
+        </li>
+      
+        <!-- Coupons -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="couponsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-percentage"></i> Coupons
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="couponsDropdown">
+            <li><a class="dropdown-item" href="#">Create Coupon</a></li>
+            <li><a class="dropdown-item" href="#">Update Coupon</a></li>
+            <li><a class="dropdown-item" href="#">List Coupons</a></li>
+          </ul>
+        </li>
+      
+        <!-- Reviews -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="reviewsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-star"></i> Reviews
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="reviewsDropdown">
+            <li><a class="dropdown-item" href="#">View Reviews</a></li>
+            <li><a class="dropdown-item" href="#">Reply to Reviews</a></li>
+          </ul>
+        </li>
+      </ul>
+      
+      
+    </div>
+    <div id="sidebar-footer" class="mt-auto p-3 text-center text-white">
+      <p>&copy; 2025 Admin Panel</p>
+    </div>
+  </nav>
+  <!-- Sidebar -->
+
+  <!-- main contant -->
+
+  <div id="mainContent" class="container-fluid">
+    <div class="container mt-5">
+      <div class="container mt-5 bg-light p-4 rounded">
+        <h1 class="mb-4 text-center">Subcategories Management</h1>
+      
+        <!-- Success and Error Messages -->
+        <% if (success_msg) { %>
+          <div class="alert alert-success"><%= success_msg %></div>
+        <% } %>
+        <% if (error_msg) { %>
+          <div class="alert alert-danger"><%= error_msg %></div>
+        <% } %>
+      
+        <div class="text-end mb-3">
+          <a href="/admin/subcategory/create" class="btn btn-success">
+            <i class="fas fa-plus"></i> Create New Subcategory
+          </a>
+        </div>
+      
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Category</th>
+                <th>Subcategories</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% categories.forEach((category, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><strong><%= category.name %></strong></td>
+                  <td>
+                    <!-- Subcategory Dropdown -->
+                    <select class="form-select">
+                      <option disabled selected>Select Subcategory</option>
+                      <% subcategories.forEach(subcategory => { %>
+                        <% if (subcategory.category._id.toString() === category._id.toString()) { %>
+                          <option value="<%= subcategory._id %>">
+                            <%= subcategory.name %>
+                          </option>
+                        <% } %>
+                      <% }) %>
+                    </select>
+                  </td>
+                  <td>
+                    <a href="/admin/subcategory/edit/<%= category._id %>" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="/admin/subcategory/delete/<%= category._id %>" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Are you sure you want to delete this category?');">Delete</a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+  <!-- main contant -->
+
+  <footer>
+    <p>&copy; 2025 A-world Admin Panel. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('mainContent');
+      sidebar.classList.toggle('hidden');
+      mainContent.classList.toggle('full-width');
+    });
+  </script>
+</body>
+</html>

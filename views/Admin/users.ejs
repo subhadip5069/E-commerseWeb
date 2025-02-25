@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url(/admin/dashboard.jpg);
+      background-blend-mode: darken;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+    #sidebar {
+      text-align: center;
+      width: 250px;
+      background-color: #0000007c;
+      backdrop-filter: blur(10px);
+      height: 100vh;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    #sidebar.hidden {
+      transform: translateX(-100%);
+    }
+    #mainContent {
+      transition: margin-left 0.3s ease;
+      margin-left: 20px;
+      min-height: calc(100vh - 56px);
+      padding-top: 70px;
+      padding-bottom: 70px;
+    }
+    #mainContent.full-width {
+      margin-left: 0;
+    }
+    #sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 251, 0, 0.7);
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.1s ease;
+    }
+    #sidebar .nav-link:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+    }
+    footer {
+      background-color: black;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #001aff31; backdrop-filter: blur(10px);">
+    <div class="container-fluid">
+      <!-- Sidebar Toggle Button -->
+      <button class="btn btn-dark me-3" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <!-- Brand Name -->
+      <a class="navbar-brand" href="#">Admin Panel</a>
+      
+      <!-- Search Form -->
+      <form class="d-none d-md-flex ms-auto me-3" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-light" type="submit">Search</button>
+      </form>
+      
+      <!-- Notification and Profile Dropdowns -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Notification Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bell"></i>
+            <span class="badge bg-danger">3</span> <!-- Notification count -->
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+            <li><a class="dropdown-item" href="#">New booking request</a></li>
+            <li><a class="dropdown-item" href="#">New comment on blog</a></li>
+            <li><a class="dropdown-item" href="#">System update available</a></li>
+          </ul>
+        </li>
+  
+        <!-- Profile Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://via.placeholder.com/30" alt="Profile" class="rounded-circle me-2" width="30" height="30">
+            <span>Admin</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+            <li><a class="dropdown-item" href="#">My Profile</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+
+  <!-- Sidebar -->
+  <nav id="sidebar" class="d-flex flex-column flex-shrink">
+    <div class="p-3">
+      <h5 class="text-white">Menu</h5>
+    </div>
+    <div class="sidebar-sticky flex-grow-1">
+      <hr class="text-white">
+      <ul class="nav flex-column">
+        <!-- Dashboard -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="dashboardDropdown">
+            <li><a class="dropdown-item" href="#">View Dashboard</a></li>
+          </ul>
+        </li>
+      
+        <!-- New User -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="newUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-plus"></i> New User
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="newUserDropdown">
+            <li><a class="dropdown-item" href="#">Create New User</a></li>
+            <li><a class="dropdown-item" href="#">Verify User</a></li>
+            <li><a class="dropdown-item" href="#">List New Users</a></li>
+          </ul>
+        </li>
+      
+        <!-- Products -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-box"></i> Products
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+            <li><a class="dropdown-item" href="#">Create Product</a></li>
+            <li><a class="dropdown-item" href="#">Update Product</a></li>
+            <li><a class="dropdown-item" href="#">List Products</a></li>
+          </ul>
+        </li>
+      
+        <!-- Payments -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-wallet"></i> Payments
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="paymentsDropdown">
+            <li><a class="dropdown-item" href="#">View Payments</a></li>
+            <li><a class="dropdown-item" href="#">Refund Requests</a></li>
+            <li><a class="dropdown-item" href="#">Payment Settings</a></li>
+          </ul>
+        </li>
+      
+        <!-- Categories -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-tags"></i> Categories
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="#">Create Category</a></li>
+            <li><a class="dropdown-item" href="#">Update Category</a></li>
+            <li><a class="dropdown-item" href="#">List Categories</a></li>
+            <li class="dropdown-divider"></li>
+            <li class="dropdown-submenu">
+              <a class="dropdown-item dropdown-toggle" href="#">Sub Category</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Create Sub Category</a></li>
+                <li><a class="dropdown-item" href="#">Update Sub Category</a></li>
+                <li><a class="dropdown-item" href="#">List Sub Categories</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      
+        <!-- Orders -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-shopping-cart"></i> Orders
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+            <li><a class="dropdown-item" href="#">Create Order</a></li>
+            <li><a class="dropdown-item" href="#">Update Order</a></li>
+            <li><a class="dropdown-item" href="#">List Orders</a></li>
+          </ul>
+        </li>
+        
+        <!-- Customers -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="customersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user"></i> Customers
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="customersDropdown">
+            <li><a class="dropdown-item" href="#">Create Customer</a></li>
+            <li><a class="dropdown-item" href="#">Update Customer</a></li>
+            <li><a class="dropdown-item" href="#">List Customers</a></li>
+          </ul>
+        </li>
+      
+        <!-- Coupons -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="couponsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-percentage"></i> Coupons
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="couponsDropdown">
+            <li><a class="dropdown-item" href="#">Create Coupon</a></li>
+            <li><a class="dropdown-item" href="#">Update Coupon</a></li>
+            <li><a class="dropdown-item" href="#">List Coupons</a></li>
+          </ul>
+        </li>
+      
+        <!-- Reviews -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="reviewsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-star"></i> Reviews
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="reviewsDropdown">
+            <li><a class="dropdown-item" href="#">View Reviews</a></li>
+            <li><a class="dropdown-item" href="#">Reply to Reviews</a></li>
+          </ul>
+        </li>
+      </ul>
+      
+      
+    </div>
+    <div id="sidebar-footer" class="mt-auto p-3 text-center text-white">
+      <p>&copy; 2025 Admin Panel</p>
+    </div>
+  </nav>
+  <!-- Sidebar -->
+
+  <!-- main contant -->
+ <!-- Display success message if exists -->
+
+
+  <div id="mainContent" class="container-fluid">
+    <!-- Display success message if exists -->
+  
+    <div class="container mt-5">
+      <div class="container mt-5 rounded bg-light p-4">
+        
+        <h1 class="text-center">User Management</h1>
+        <div class="collapse alert alert-success" id="collapseExample">
+          <div class="card card-body" style="background-color: transparent; color:green; border: none; text-align: center;">
+            <h5 class="card-title " > User Updated successfully</h5>
+          </div>
+        </div>
+      
+       
+        <!-- Search Form -->
+        <form method="GET" action="/admin/user" class="mb-4">
+            <div class="form-group">
+                <input type="text" name="name" class="form-control" placeholder="Search by Username" value="<%= searchQuery || '' %>">
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Search</button>
+        </form>
+    
+        <!-- Users Table -->
+        <% if (users.length > 0) { %>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <td><%= user.username %></td>
+                            <td><%= user.email %></td>
+                            <td>
+                                <!-- Switch for updating user status -->
+                                <div class="form-check form-switch">
+                                  <input class="form-check-input status-switch" name="status" type="checkbox" role="switch" id="statusSwitch<%= user._id %>" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"
+                                      data-user-id="<%= user._id %>" <%= user.status === 'active' ? 'checked' : '' %>>
+                                  <label class="form-check-label" for="statusSwitch<%= user._id %>">
+                                      <%= user.status === 'active' ? 'Active' : 'Inactive' %>
+                                  </label>
+                              </div>
+                              
+                            </td>
+                            
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div class="alert alert-info">
+                No users found.
+            </div>
+        <% } %>
+    
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="/admin/user?page=<%= currentPage - 1 %>&limit=<%= limit %>" class="btn btn-secondary btn-sm">Previous</a>
+            <% } %>
+    
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/admin/user?page=<%= i %>&limit=<%= limit %>" 
+                   class="btn btn-sm <%= currentPage === i ? 'btn-info' : 'btn-outline-info' %>">
+                   <%= i %>
+                </a>
+            <% } %>
+    
+            <% if (currentPage < totalPages) { %>
+                <a href="/admin/user?page=<%= currentPage + 1 %>&limit=<%= limit %>" class="btn btn-secondary btn-sm">Next</a>
+            <% } %>
+        </div>
+    
+        <a href="/admin/user" class="btn btn-secondary mt-3">Back to All Users</a>
+    </div>
+    
+    
+    </div>
+  </div>
+  <!-- main contant -->
+
+  <footer>
+    <p>&copy; 2025 A-world Admin Panel. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('mainContent');
+      sidebar.classList.toggle('hidden');
+      mainContent.classList.toggle('full-width');
+    });
+  </script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // JavaScript for handling the switch toggle and sending AJAX request
+    $(document).ready(function() {
+        $('.status-switch').change(function() {
+            const userId = $(this).data('user-id'); // Get user ID from the data attribute
+            const status = $(this).prop('checked') ? 'active' : 'inactive'; // Determine the new status
+
+            // Send the update request via AJAX
+            $.ajax({
+                url: '/admin/user/status/' + userId,
+                method: 'POST',
+                data: {
+                    status: status
+                },
+                success: function(response) {
+                    // You can handle success response here if needed
+                    alert('User status updated successfully');
+                },
+                error: function(error) {
+                    // Handle error
+                    alert('Error updating user status');
+                    console.error(error);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
