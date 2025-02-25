@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url(/admin/dashboard.jpg);
+      background-blend-mode: darken;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      /* background fixed */
+      background-attachment: fixed;
+
+    }
+    #sidebar {
+        text-align: center;
+      width: 250px;
+      background-color:#0000007c;
+      backdrop-filter: blur(10px);
+      height: 95vh;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      overflow-y: auto;
+    }
+    #sidebar.hidden {
+      transform: translateX(-100%);
+    }
+    #mainContent {
+      transition: all 0.3s ease;
+      margin-left: 100px;
+     padding-bottom: 100px;
+    }
+    #mainContent.full-width {
+      margin-left: 0;
+    }
+    #sidebar .nav-link {
+    text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 251, 0, 0.589);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 5px;
+      transition: all 0.1s ease;
+      text-decoration: none;
+    }
+    #sidebar .nav-link:hover {
+      background-color: rgb(0, 0, 0);
+      color: #f4f6f9;
+      backdrop-filter: blur(10px);
+    }
+    #sidebar-footer {
+      background-color: black;
+      color: white;
+      padding: 10px;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      #sidebar {
+        width: 200px;
+      }
+      #mainContent {
+        margin-left: 0;
+      }
+    }
+  
+    .card {
+      border: none;
+      border-radius: 10px;
+    }
+    .card-header {
+      background-color: rgba(0, 0, 0, 0.03);
+      border-bottom: none;
+    }
+  
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #001aff31; backdrop-filter: blur(10px);">
+    <div class="container-fluid">
+      <!-- Sidebar Toggle Button -->
+      <button class="btn btn-dark me-3" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <!-- Brand Name -->
+      <a class="navbar-brand" href="#">Admin Panel</a>
+      
+      <!-- Search Form -->
+      <form class="d-none d-md-flex ms-auto me-3" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-light" type="submit">Search</button>
+      </form>
+      
+      <!-- Notification and Profile Dropdowns -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Notification Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bell"></i>
+            <span class="badge bg-danger">3</span> <!-- Notification count -->
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+            <li><a class="dropdown-item" href="#">New booking request</a></li>
+            <li><a class="dropdown-item" href="#">New comment on blog</a></li>
+            <li><a class="dropdown-item" href="#">System update available</a></li>
+          </ul>
+        </li>
+  
+        <!-- Profile Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://via.placeholder.com/30" alt="Profile" class="rounded-circle me-2" width="30" height="30">
+            <span>Admin</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+            <li><a class="dropdown-item" href="#">My Profile</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+
+  <!-- Sidebar -->
+  <nav id="sidebar" class="d-flex flex-column flex-shrink">
+    <div class="p-3">
+      <h5 class="text-white">Menu</h5>
+    </div>
+    <div class="sidebar-sticky flex-grow-1">
+      <hr class="text-white">
+      <ul class="nav flex-column">
+        <!-- Dashboard -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/admin/dashboard" id="dashboardDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="dashboardDropdown">
+            <li><a class="dropdown-item" href="/admin/dashboard">View Dashboard</a></li>
+          </ul>
+        </li>
+      
+        <!-- New User -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="newUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-plus"></i> New User
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="newUserDropdown">
+            <li><a class="dropdown-item" href="#">Create New User</a></li>
+            <li><a class="dropdown-item" href="#">Verify User</a></li>
+            <li><a class="dropdown-item" href="#">List New Users</a></li>
+          </ul>
+        </li>
+      
+        <!-- Products -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-box"></i> Products
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+            <li><a class="dropdown-item" href="/admin/product/create">Create Product</a></li>
+            <li><a class="dropdown-item" href="/admin/product/products">List Products</a></li>
+          </ul>
+        </li>
+      
+        <!-- Payments -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-wallet"></i> Payments
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="paymentsDropdown">
+            <li><a class="dropdown-item" href="#">View Payments</a></li>
+            <li><a class="dropdown-item" href="#">Refund Requests</a></li>
+            <li><a class="dropdown-item" href="#">Payment Settings</a></li>
+          </ul>
+        </li>
+      
+        <!-- Categories -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-tags"></i> Categories
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="#">Create Category</a></li>
+            <li><a class="dropdown-item" href="#">Update Category</a></li>
+            <li><a class="dropdown-item" href="#">List Categories</a></li>
+            <li class="dropdown-divider"></li>
+            <li class="dropdown-submenu">
+              <a class="dropdown-item dropdown-toggle" href="#">Sub Category</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Create Sub Category</a></li>
+                <li><a class="dropdown-item" href="#">Update Sub Category</a></li>
+                <li><a class="dropdown-item" href="#">List Sub Categories</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      
+        <!-- Orders -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-shopping-cart"></i> Orders
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+            <li><a class="dropdown-item" href="#">Create Order</a></li>
+            <li><a class="dropdown-item" href="#">Update Order</a></li>
+            <li><a class="dropdown-item" href="#">List Orders</a></li>
+          </ul>
+        </li>
+        
+        <!-- Customers -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="customersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user"></i> Customers
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="customersDropdown">
+            <li><a class="dropdown-item" href="#">Create Customer</a></li>
+            <li><a class="dropdown-item" href="#">Update Customer</a></li>
+            <li><a class="dropdown-item" href="#">List Customers</a></li>
+          </ul>
+        </li>
+      
+        <!-- Coupons -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="couponsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-percentage"></i> Coupons
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="couponsDropdown">
+            <li><a class="dropdown-item" href="#">Create Coupon</a></li>
+            <li><a class="dropdown-item" href="#">Update Coupon</a></li>
+            <li><a class="dropdown-item" href="#">List Coupons</a></li>
+          </ul>
+        </li>
+      
+        <!-- Reviews -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="reviewsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-star"></i> Reviews
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="reviewsDropdown">
+            <li><a class="dropdown-item" href="#">View Reviews</a></li>
+            <li><a class="dropdown-item" href="#">Reply to Reviews</a></li>
+          </ul>
+        </li>
+      </ul>
+      
+    </div>
+    <div id="sidebar-footer" class="mt-auto p-3 text-center text-white">
+      <p>&copy; 2025 Admin Panel</p>
+    </div>
+  </nav>
+  <!-- main contain -->
+  
+<div id="mainContent" class="container-fluid main-content mt-5 h-100-vh" >
+  <div class="container-fluid main-content" style="padding-top: 100px;">
+
+    <div class="container mt-4">
+        <!-- Cards Section -->
+        <div class="row g-3">
+          <div class="col-md-3">
+            <div class="card bg-primary text-white">
+              <div class="card-body">
+                <h5 class="card-title">Total Users</h5>
+                <h3>1,245</h3>
+                <p>+15% from last month</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-success text-white">
+              <div class="card-body">
+                <h5 class="card-title">Bookings</h5>
+                <h3>854</h3>
+                <p>+10% this week</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-warning text-white">
+              <div class="card-body">
+                <h5 class="card-title">Revenue</h5>
+                <h3>$12,450</h3>
+                <p>+20% this quarter</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-danger text-white">
+              <div class="card-body">
+                <h5 class="card-title">Pending Issues</h5>
+                <h3>24</h3>
+                <p>Resolve ASAP</p>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+     <!-- Graph Section -->
+    <div class="container mt-4">
+        <div class="row g-3 mt-4">
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">Chart 1</div>
+                <div class="card-body">
+                  <canvas id="chart1"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">Chart 2</div>
+                <div class="card-body">
+                  <canvas id="chart2"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">Chart 3</div>
+                <div class="card-body">
+                  <canvas id="chart3"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+          <div class="row g-3 mt-4">
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">Chart 4</div>
+                <div class="card-body">
+                  <canvas id="chart4"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">Chart 5</div>
+                <div class="card-body">
+                  <canvas id="chart5"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">Chart 6</div>
+                <div class="card-body">
+                  <canvas id="chart6"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="container mt-4">
+      
+        <!-- Form Section -->
+        <div class="row g-3 mt-4">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h6 class="card-title">Quick Form</h6>
+              </div>
+              <div class="card-body">
+                <form>
+                  <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" placeholder="Enter your name">
+                  </div>
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email">
+                  </div>
+                  <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control" id="message" rows="3" placeholder="Your message..."></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h6 class="card-title">Actions</h6>
+              </div>
+              <div class="card-body">
+                <button class="btn btn-success mb-2">Add New</button>
+                <button class="btn btn-info mb-2">Update</button>
+                <button class="btn btn-danger mb-2">Delete</button>
+              </div>
+            </div>
+          </div>
+       
+     
+      
+   
+    <div class="container mt-4">
+      <div class="row g-3 mt-4">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">Chart 1</div>
+              <div class="card-body">
+                <canvas id="chart1"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">Chart 2</div>
+              <div class="card-body">
+                <canvas id="chart2"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">Chart 3</div>
+              <div class="card-body">
+                <canvas id="chart3"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="row g-3 mt-4">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">Chart 4</div>
+              <div class="card-body">
+                <canvas id="chart4"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">Chart 5</div>
+              <div class="card-body">
+                <canvas id="chart5"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">Chart 6</div>
+              <div class="card-body">
+                <canvas id="chart6"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="container mt-4">
+      <div class="row g-3 mt-4">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Chart 1</div>
+            <div class="card-body">
+              <canvas id="chart1"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Chart 2</div>
+            <div class="card-body">
+              <canvas id="chart2"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Chart 3</div>
+            <div class="card-body">
+              <canvas id="chart3"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-4">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Chart 4</div>
+            <div class="card-body">
+              <canvas id="chart4"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Chart 5</div>
+            <div class="card-body">
+              <canvas id="chart5"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Chart 6</div>
+            <div class="card-body">
+              <canvas id="chart6"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+      
+<!-- main contant -->
+ <!-- fooetr -->
+
+ <footer class="bg-dark text-light ">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <p>&copy; 2025 A-world Admin Panel. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-end">
+        <p class="mb-0">Version 1.0.0 | <a href="#" class="text-light text-decoration-none">Support</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+ <!-- footer end
+   -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <script>
+    AOS.init();
+    
+    
+    // Sidebar toggle
+    document.getElementById('sidebarToggle').addEventListener('click', function () {
+      document.getElementById('sidebar').classList.toggle('hidden');
+      document.getElementById('mainContent').classList.toggle('full-width');
+    });
+
+    // Ensure sidebar is always visible on desktop
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 768) {
+        document.getElementById('sidebar').classList.remove('hidden');
+        document.getElementById('mainContent').classList.remove('full-width');
+      }
+    });
+    
+  </script>
+   <script>
+    // Line Chart (Monthly Performance)
+const lineCtx = document.getElementById('lineChart').getContext('2d');
+new Chart(lineCtx, {
+  type: 'line',
+  data: {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    datasets: [{
+      label: 'Revenue',
+      data: [12000, 15000, 17000, 13000, 20000, 30000, 25000],
+      borderColor: 'rgba(75, 192, 192, 1)',
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderWidth: 2
+    }]
+  }
+});
+
+// Bar Chart (Sales Report)
+const barCtx = document.getElementById('barChart').getContext('2d');
+new Chart(barCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+    datasets: [{
+      label: 'Sales',
+      data: [50000, 60000, 75000, 90000],
+      backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+      borderWidth: 1
+    }]
+  }
+});
+
+// Doughnut Chart (User Engagement)
+const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+new Chart(doughnutCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Active', 'Inactive', 'Banned'],
+    datasets: [{
+      data: [65, 25, 10],
+      backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(255, 206, 86, 0.6)']
+    }]
+  }
+});
+
+// Pie Chart (Device Usage)
+const pieCtx = document.getElementById('pieChart').getContext('2d');
+new Chart(pieCtx, {
+  type: 'pie',
+  data: {
+    labels: ['Desktop', 'Mobile', 'Tablet'],
+    datasets: [{
+      data: [55, 30, 15],
+      backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 159, 64, 0.6)', 'rgba(153, 102, 255, 0.6)']
+    }]
+  }
+});
+
+// Radar Chart (Skill Analysis)
+const radarCtx = document.getElementById('radarChart').getContext('2d');
+new Chart(radarCtx, {
+  type: 'radar',
+  data: {
+    labels: ['Communication', 'Teamwork', 'Problem-Solving', 'Leadership', 'Creativity'],
+    datasets: [{
+      label: 'Skill Level',
+      data: [85, 75, 90, 70, 80],
+      backgroundColor: 'rgba(153, 102, 255, 0.2)',
+      borderColor: 'rgba(153, 102, 255, 1)',
+      borderWidth: 2
+    }]
+  }
+});
+
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
