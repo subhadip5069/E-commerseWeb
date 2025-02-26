@@ -128,9 +128,12 @@ class BillController {
             
     
             await transporter.sendMail(mailOptions);
-            console.log("Invoice email sent successfully");
+            
+            
+            res.redirect("/cart");
         } catch (error) {
-            console.error("Error sending invoice email:", error);
+            res.session.error_msg = "Failed to send invoice email.";
+            res.redirect("/cart");
         }
     };
 

@@ -84,9 +84,10 @@ signup = async (req, res) => {
         return res.redirect("/signup");
       }
       console.log("Email sent:", info.response);
+      
       res.render("Ui/verify", {
         email,
-        message: "OTP sent successfully. Please verify your email.",
+        message:  req.flash(),
       });
     });
   } catch (error) {
@@ -102,7 +103,7 @@ signup = async (req, res) => {
     if (otpData.otp === otp) {
       if (Date.now() > otpData.expiresAt) {
         otpData = { otp: null, expiresAt: null };
-        return res.render("Ui/verify", { email, message: "OTP has expired. Please request a new one." });
+        return res.render("Ui/verify", { email, message:  req.flash() });
       }
   
       try {
@@ -114,7 +115,7 @@ signup = async (req, res) => {
         );
   
         if (!user) {
-          return res.status(404).render("Ui/verify", { email, message: "User not found." });
+          return res.render("Ui/verify", { email, message:  req.flash()});
         }
   
         otpData = { otp: null, expiresAt: null }; // Reset OTP
@@ -122,10 +123,10 @@ signup = async (req, res) => {
         res.redirect("/login");
       } catch (error) {
         console.error("Error verifying OTP:", error);
-        res.status(500).render("Ui/verify", { email, message: "An error occurred during verification." });
+       res.render("Ui/verify", { email, messages: req.flash()});
       }
     } else {
-      res.render("Ui/verify", { email, message: "Invalid OTP. Please try again." });
+      res.render("Ui/verify", { email, message:  req.flash()});
     }
   };
 
@@ -135,16 +136,19 @@ signup = async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(401).json({ message: "User not found!" });
+            req.flash("error_msg", "User not found!");
+          return res.redirect("/login");
         }
 
         if (!user.isVerified) {
-            return res.status(401).json({ message: "Account not verified!" });
+            req.flash("error_msg", "User is not verified!");
+            return res.redirect("/login");
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: "Incorrect password!" });
+            req.flash("error_msg", "Incorrect password!");
+            return res.redirect("/login");
         }
 
         // Generate JWT Token
@@ -167,9 +171,16 @@ signup = async (req, res) => {
 
     } catch (error) {
         console.error("Error logging in:", error);
+       req.flash("error_msg", "An error occurred during login.");
         return res.redirect("/login");
     }
 };
+
+  logout = (req, res) => {
+    res.clearCookie("token");
+    res.redirect("/login");
+    console.log("User logged out.");
+  }
   
   }
   

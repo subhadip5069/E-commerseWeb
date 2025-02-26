@@ -34,7 +34,7 @@ const userId = req.user;
         });
     };
     login = async (req,res) =>{
-        res.render('Ui/login')
+        res.render('Ui/login',{messages: req.flash()})
     }
     signup = (req,res) =>{
         res.render('Ui/signup')
@@ -98,7 +98,8 @@ const userId = req.user;
     
             // ✅ Validate the ObjectId before querying
             if (!mongoose.Types.ObjectId.isValid(userId)) {
-                return res.status(400).json({ message: "Invalid user ID" });
+                res.flash("error_msg", "Invalid user ID");
+                res.redirect("/carts");
             }
     
             // Fetch data
@@ -176,7 +177,7 @@ const userId = req.user;
             });
         } catch (error) {
             console.error("Error fetching product:", error);
-            res.status(500).json({ message: "Server error" });
+            res.redirect("/");
         }
     };
     
@@ -196,7 +197,7 @@ const userId = req.user;
             
             const product = await Product.findById( req.params.id).populate("category subcategory");
             if (!product) {
-                return res.status(404).send("Product not found");
+                return res.redirect("/products");
             }
             res.render("Ui/productresult", {
                 title: "Product Details",
@@ -381,7 +382,8 @@ const userId = req.user;
     
         } catch (error) {
             console.error("Error in fetching order history:", error);
-            res.status(500).send("Internal Server Error");
+        res.session.error_msg = "Failed to fetch order history. Please try again.";
+        res.redirect("/orderhistory");
         }
     };
     

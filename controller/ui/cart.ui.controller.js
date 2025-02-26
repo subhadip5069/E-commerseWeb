@@ -14,9 +14,7 @@ class CartController {
                 user: req.user.id, // ✅ Only use the ID
                 product: productId
             });
-            if(!user){
-                return res.redirect("/login")
-            }
+           
     
             if (cartItem) {
                 cartItem.quantity = Number(cartItem.quantity) + Number(quantity); // Ensure numbers are added correctly
@@ -28,10 +26,12 @@ class CartController {
                     quantity: Number(quantity) // Ensure it's stored as a number
                 });
             }
-            
+        
             res.redirect("/cart");
+            
+           
         } catch (error) {
-            res.redirect("/");
+            res.redirect("/login");
         }
     };
     // Remove from Cart
