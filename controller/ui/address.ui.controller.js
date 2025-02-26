@@ -24,12 +24,14 @@ class AddressController {
 
             await newAddress.save();
             console.log("New Address Added:", newAddress);
+            res.session.success_msg = "Address added successfully.";
 
             res.redirect("/cart");  // ✅ Redirect to cart or another relevant page
 
         } catch (error) {
             console.error("Error adding address:", error);
-            res.status(500).json({ success: false, message: "Failed to add address" }); // ✅ Ensure proper status code
+           res.session.error_msg = "Failed to add address.";
+            res.redirect("/cart");
         }
     }
 
@@ -46,14 +48,17 @@ class AddressController {
             );
 
             if (!updatedAddress) {
-                return res.status(404).json({ success: false, message: "Address not found" });
+                res.session.error_msg = "Address not found.";
+                return res.redirect("/cart");
             }
 
-            res.json({ success: true, message: "Address updated successfully", updatedAddress });
-
+            
+            res.session.success_msg = "Address updated successfully.";
+            res.redirect("/cart");
         } catch (error) {
             console.error(error);
-            res.status(500).json({ success: false, message: "Failed to update address" });
+            res.session.error_msg = "Failed to update address.";
+            res.redirect("/cart");
         }
     }
 
@@ -65,11 +70,12 @@ class AddressController {
             const deletedAddress = await Address.findByIdAndDelete(addressId);
 
             if (!deletedAddress) {
-                return res.status(404).json({ success: false, message: "Address not found" });
+                res.session.error_msg = "Address not found.";
+                return res.redirect("/cart");
             }
 
-            res.json({ success: true, message: "Address deleted successfully" });
-
+            res.session.success_msg = "Address deleted successfully.";
+            res.redirect("/cart");
         } catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: "Failed to delete address" });

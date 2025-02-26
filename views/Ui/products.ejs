@@ -151,7 +151,7 @@
   
   <!-- navbar -->
 
-  <%-include('partial/head') %>
+<%- include('partial/head') %>
 
 
   
@@ -397,7 +397,162 @@ document.addEventListener("DOMContentLoaded", function () {
   
 
 
-<!-- Filter Modal -->
+
+
+<section data-aos="zoom-in">
+  <div class="container py-5">
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; background-color: rgba(0, 0, 0, 0.788); backdrop-filter: blur(10px); color: #ddd; padding: 20px; border-radius: 20px;">
+      <h2 style="margin: 0; text-align: center; color: #ddd;">Filtered Products</h2>
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#categoryModal">
+        Filter Products
+      </button>
+    </div>
+
+    <!-- Filter Form -->
+    <form class="d-flex mb-4" action="/products/filter" method="GET">
+      <input class="form-control me-2" type="text" name="searchQuery" placeholder="Search products..." value="<%= searchQuery || '' %>">
+      
+      <!-- Category Dropdown -->
+      <select class="form-control me-2" name="category" id="category">
+        <option value="">Select Category</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat._id %>" <%= category == cat._id ? "selected" : "" %>><%= cat.name %></option>
+        <% }) %>
+      </select>
+
+      <!-- Subcategory Dropdown -->
+      <select class="form-control me-2" name="subcategory" id="subcategory" <%= category ? "" : "disabled" %>>
+        <option value="">Select Subcategory</option>
+        <% if (category) { %>
+          <% categories.forEach(cat => { %>
+            <% if (cat._id == category) { %>
+              <% cat.subcategories.forEach(subcat => { %>
+                <option value="<%= subcat._id %>" <%= subcategory == subcat._id ? "selected" : "" %>><%= subcat.name %></option>
+              <% }) %>
+            <% } %>
+          <% }) %>
+        <% } %>
+      </select>
+
+      <!-- Price Filters -->
+      <input type="number" class="form-control me-2" name="minPrice" placeholder="Min Price" value="<%= minPrice || '' %>">
+      <input type="number" class="form-control me-2" name="maxPrice" placeholder="Max Price" value="<%= maxPrice || '' %>">
+
+      <!-- Rating Filters -->
+      <input type="number" class="form-control me-2" name="minRating" placeholder="Min Rating" min="1" max="5" step="0.1" value="<%= minRating || '' %>">
+      <input type="number" class="form-control me-2" name="maxRating" placeholder="Max Rating" min="1" max="5" step="0.1" value="<%= maxRating || '' %>">
+
+      <button class="btn btn-outline-success" type="submit">Apply Filters</button>
+    </form>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <% if (products.length > 0) { %>
+            <% products.forEach((product, index) => { %>
+              <div class="col-md-4 mb-4">
+                <div class="card shadow-sm" style="height: 450px;">
+                  <a href="/product/<%= product._id %>" class="text-decoration-none">
+                    
+                    <!-- Bootstrap Carousel for Product Images -->
+                    <div id="carousel-<%= index %>" class="carousel slide" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+                        <% if (Array.isArray(product.images) && product.images.length > 0) { %>
+                          <% product.images.forEach((image, imgIndex) => { %>
+                            <div class="carousel-item <%= imgIndex === 0 ? 'active' : '' %>">
+                              <img src="/<%= image %>" class="d-block w-100" alt="<%= product.name %>" style="height: 200px; object-fit: cover;">
+                            </div>
+                          <% }) %>
+                        <% } else { %>
+                          <div class="carousel-item active">
+                            <img src="/default-image.jpg" class="d-block w-100" alt="Default Image">
+                          </div>
+                        <% } %>
+                      </div>
+                      <% if (product.images.length > 1) { %>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<%= index %>" data-bs-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-<%= index %>" data-bs-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="visually-hidden">Next</span>
+                        </button>
+                      <% } %>
+                    </div>
+
+                    <div class="card-body">
+                      <h5 class="card-title"><%= product.name %></h5>
+                      <p class="card-text"><%= product.description.length > 50 ? product.description.substring(0, 50) + "..." : product.description %></p>
+                      <p class="card-text">
+                        <del>₹<%= product.launchingPrice ? product.launchingPrice.toFixed(2) : "0.00" %></del>
+                        ₹<%= product.currentPrice ? product.currentPrice.toFixed(2) : "0.00" %>
+                      </p>
+                      <p class="card-text">Rating: <%= product.ratings || "N/A" %>/5</p>
+                      <a href="/product/<%= product._id %>" class="btn btn-primary">View</a>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-center">No products match the filters.</p>
+          <% } %>
+        </div>
+
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+              <% if (currentPage > 1) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %>&searchQuery=<%= searchQuery %>">Previous</a>
+                </li>
+              <% } %>
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>&searchQuery=<%= searchQuery %>"><%= i %></a>
+                </li>
+              <% } %>
+              <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %>&searchQuery=<%= searchQuery %>">Next</a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JavaScript for Category & Subcategory Selection -->
+<script>
+document.getElementById("category").addEventListener("change", function () {
+   let categoryId = this.value;
+   let subcategoryDropdown = document.getElementById("subcategory");
+   subcategoryDropdown.innerHTML = '<option value="">Select Subcategory</option>';
+   if (!categoryId) {
+     subcategoryDropdown.disabled = true;
+     return;
+   }
+   fetch(`/admin/subcategory/get-subcategories/${categoryId}`)
+     .then(response => response.json())
+     .then(data => {
+       data.forEach(subcat => {
+         let option = document.createElement("option");
+         option.value = subcat._id;
+         option.textContent = subcat.name;
+         subcategoryDropdown.appendChild(option);
+       });
+       subcategoryDropdown.disabled = false;
+     });
+});
+</script>
+
+
+
 
 
 

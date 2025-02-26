@@ -40,7 +40,13 @@
 <!-- Sign In / Sign Up Form -->
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; padding-top: 80px;">
   <div class="row w-100" style="max-width: 900px; background-color: rgba(255, 255, 255, 0.8); color: #ffffff; border-radius: 20px;" data-aos="fade-up">
+    <% if (messages.error_msg) { %>
+      <div class="alert alert-danger"><%= messages.error_msg %></div>
+    <% } %>
     
+    <% if (messages.success_msg) { %>
+      <div class="alert alert-success"><%= messages.success_msg %></div>
+    <% } %>
     <!-- Sign In Section -->
     <div class="col-md-6 p-4 rounded shadow-sm" style="background-color: rgb(0, 0, 0); padding: 20px; border-radius: 20px;">
       <form action="/auth/login" method="POST">

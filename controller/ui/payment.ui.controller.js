@@ -16,6 +16,7 @@ class PurchaseController {
             
         
             if (!req.user || !req.user.id) {
+
                 return res.redirect("/login"); // Ensure user is authenticated
             }
         
@@ -38,6 +39,8 @@ class PurchaseController {
         
         } catch (error) {
             console.error("Error creating purchase:", error);
+            res.session.error_msg = "Failed to create purchase.";
+            res.redirect("/cart");
             
         }
     };
@@ -47,6 +50,7 @@ class PurchaseController {
         try {
             const { id } = req.params;
             const userId = req.user?.id// Fix missing userId
+                
 
             if (!userId) {
                 return res.redirect("/login");

@@ -13,6 +13,7 @@ app.use('/poster',require('./posters.ui.routes'))
 app.use('/user',require('./users.ui.routes'))
 app.use('/contact',require('./contact.js'))
 app.use('/booking',require('./bookings.ui.routes'))
+app.use('/auth',require('./auth.routes'))
 
 
 
