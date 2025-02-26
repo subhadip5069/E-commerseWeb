@@ -14,6 +14,9 @@ class CartController {
                 user: req.user.id, // ✅ Only use the ID
                 product: productId
             });
+            if(!user){
+                return res.redirect("/login")
+            }
     
             if (cartItem) {
                 cartItem.quantity = Number(cartItem.quantity) + Number(quantity); // Ensure numbers are added correctly
@@ -47,7 +50,7 @@ class CartController {
         } catch (error) {
             console.error("Error removing cart item:", error);
             req.session.error_msg = "Failed to remove product from cart.";
-            res.redirect("/cart");
+            res.redirect("/login");
         }
     }
 
