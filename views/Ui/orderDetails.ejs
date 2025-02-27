@@ -190,14 +190,14 @@
                       <div class="product-item">
                           <div class="row">
                               <div class="col-md-2">
-                                  <img src="/<%= item.product.image || 'placeholder.jpg' %>" alt="Product Image" class="img-fluid">
+                                  <img src="/<%= item.product.images[0] || 'placeholder.jpg' %>" alt="Product Image" class="img-fluid">
                               </div>
                               <div class="col-md-8">
                                   <p><strong>Product Name:</strong> <%= item.product.name %></p>
                                   <p><strong>Quantity:</strong> <%= item.quantity %></p>
                                   <p><strong>Launch Price:</strong> INR <%= item.product.launchingPrice || 'N/A' %></p>
-                                  <p><strong>Current Price:</strong> INR <%= item.product.price || 'N/A' %></p>
-                                  <p><strong>Subtotal:</strong> INR <%= item.quantity * item.product.price %></p>
+                                  <p><strong>Current Price:</strong> INR <%= item.product.currentPrice || 'N/A' %></p>
+                                  <p><strong>Subtotal:</strong> INR <%= item.quantity * item.product.currentPrice %></p>
                               </div>
                           </div>
                       </div>

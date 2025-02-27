@@ -1,6 +1,7 @@
 const { Category, Subcategory } = require("../../model/category");
 const product = require("../../model/product");
-
+const path = require("path");
+const fs = require("fs");
 
 
 class ProductUIController {
@@ -145,17 +146,17 @@ class ProductUIController {
       async deleteProduct(req, res) {
         try {
           const { id } = req.params;
-          const product = await product.findById(id);
-          if (!product) return res.status(404).json({ message: 'Product not found' });
+          const products = await product.findById(id);
+          if (!products) return res.status(404).json({ message: 'Product not found' });
     
           // Delete product images
-          product.images.forEach((image) => {
+          products.images.forEach((image) => {
             const imagePath = path.resolve(image);
             if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
           });
     
-          await product.remove();
-          res.status(200).json({ message: 'Product deleted successfully' });
+          await product.findByIdAndDelete(id).exec();
+          return res.redirect('/admin/product/products');
         } catch (error) {
           console.error(error);
           res.status(500).json({ message: 'Failed to delete product' });

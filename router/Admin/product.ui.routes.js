@@ -13,7 +13,7 @@ router.get('/update',AdminauthMiddleware,productUiController.updateProductUi)
 router.post('/add',AdminauthMiddleware,productupload.array('images', 10),productUiController.createProduct)
 router.get('/products',AdminauthMiddleware,productUiController.getProducts)
 router.get('/get/:id',AdminauthMiddleware,productUiController.getProductById)
-router.put('/product/:id',AdminauthMiddleware,productUiController.updateProduct)
-router.delete('/product/:id',AdminauthMiddleware,productUiController.deleteProduct)
+router.post('/product/:id',AdminauthMiddleware,productUiController.updateProduct)
+router.get('/product/delete/:id',AdminauthMiddleware,productUiController.deleteProduct)
 
 module.exports = router

@@ -12,6 +12,7 @@ router.use('/cart',require('./cart.ui.routes'))
 router.use('/address',require('./address.ui.router'))
 router.use('/payment',require('./payment.ui.routes'))
 router.use('/bill',require('./bill.routes'))
+router.use('/scearch',require('./filter.product.routes'))
 
 
 

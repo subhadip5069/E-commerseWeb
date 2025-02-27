@@ -322,6 +322,7 @@
                    <!-- Category Dropdown -->
          <label for="category">Category:</label>
          <select id="category" name="category" class="form-control" required>
+             <option value="">Select Category</option>
           <% categories.forEach(category => { %>
                 <option value="<%= category._id %>"><%= category.name %></option>
              <% }) %>

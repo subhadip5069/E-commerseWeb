@@ -186,39 +186,188 @@
    
 <!-- main -->
 <section data-aos="zoom-in">
-    <div class="container py-5">
-        <h2>Filtered Products</h2>
-        <% if (products.length === 0) { %>
-          <p>No products found matching your criteria.</p>
-        <% } else { %>
-          <div class="product-list">
-            <% products.forEach(product => { %>
-              <div class="product">
-                <h3><%= product.name %></h3>
-                <p><%= product.description %></p>
-                <p>Price: $<%= product.currentPrice %></p>
-                <p>Rating: <%= product.ratings %> / 5</p>
-              </div>
-            <% }); %>
-          </div>
-        
-          <!-- Pagination Controls -->
-          <div class="pagination">
-            <% if (currentPage > 1) { %>
-              <a href="?category=<%= category %>&subcategory=<%= subcategory %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&minRating=<%= minRating %>&maxRating=<%= maxRating %>&page=<%= currentPage - 1 %>&limit=<%= limit %>">Previous</a>
-            <% } %>
-        
-            <span>Page <%= currentPage %> of <%= totalPages %></span>
-        
-            <% if (currentPage < totalPages) { %>
-              <a href="?category=<%= category %>&subcategory=<%= subcategory %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&minRating=<%= minRating %>&maxRating=<%= maxRating %>&page=<%= currentPage + 1 %>&limit=<%= limit %>">Next</a>
-            <% } %>
-          </div>
-        <% } %>
-        
-    </div>
-  </section>
+  <div class="container py-5">
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; background-color: rgba(0, 0, 0, 0.788); backdrop-filter: blur(10px); color: #ddd; padding: 20px; border-radius: 20px;">
+      <h2 style="margin: 0; text-align: center; color: #ddd;">Filter Products</h2>
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#categoryModal">
+          Filter by Category
+      </button>
+  </div>
   
+    <div class="row">
+      <!-- Product Grid -->
+      <div class="col-md-12">
+        <div class="row">
+          <% if (products.length > 0) { %>
+            <% products.forEach((product, index) => { %>
+              <div class="col-md-4 mb-4">
+                <div class="card shadow-sm" style="height: 450px;">
+                  <a href="/product/<%= product._id %>" class="text-decoration-none">
+                    <!-- Bootstrap Carousel for Product Images -->
+                    <div id="carousel-<%= index %>" class="carousel slide" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+                        <% if (Array.isArray(product.images) && product.images.length > 0) { %>
+                          <% product.images.forEach((image, imgIndex) => { %>
+                            <div class="carousel-item <%= imgIndex === 0 ? 'active' : '' %>">
+                              <img src="/<%= image %>" class="d-block w-100" alt="<%= product.name %>" style="height: 200px; object-fit: cover;">
+                            </div>
+                          <% }) %>
+                        <% } else { %>
+                          <div class="carousel-item active">
+                            <img src="/default-image.jpg" class="d-block w-100" alt="Default Image">
+                          </div>
+                        <% } %>
+                      </div>
+                      <% if (product.images.length > 1) { %>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<%= index %>" data-bs-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-<%= index %>" data-bs-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="visually-hidden">Next</span>
+                        </button>
+                      <% } %>
+                    </div>
+
+                    <div class="card-body">
+                      <h5 class="card-title"><%= product.name %></h5>
+                      <p class="card-text"><%= product.description.length > 50 ? product.description.substring(0, 50) + "..." : product.description %></p>
+                      <p class="card-text">
+                        <del>₹<%= product.launchingPrice ? product.launchingPrice.toFixed(2) : "0.00" %></del>
+                        ₹<%= product.currentPrice ? product.currentPrice.toFixed(2) : "0.00" %>
+                      </p>
+                      <a href="/product/<%= product._id %>" class="btn btn-primary">View</a>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-center">No products available.</p>
+          <% } %>
+        </div>
+
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+              <% if (currentPage > 1) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                </li>
+              <% } %>
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+              <% } %>
+              <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true"
+style="display: none; background: rgba(0, 0, 0, 0.5);">
+<div class="modal-dialog modal-xl" style="max-width: 90%; margin: auto;">
+    <div class="modal-content" style="border-radius: 10px; padding: 15px; background: white;">
+        <div class="modal-header" style="border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+            <h5 class="modal-title" id="categoryModalLabel">Filter Products</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="border: none; background: transparent; font-size: 20px;">
+                &times;
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="filterForm" action="/filter" method="GET">
+                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                    <!-- Category Section -->
+                    <div style="flex: 1; min-width: 250px; max-height: 80vh; overflow-y: auto;">
+                        <h5 style="font-weight: bold;">Categories</h5>
+                        <ul style="list-style: none; padding: 0;">
+                            <% categories.forEach(function(category) { %>
+                                <li>
+                                    <label style="display: flex; align-items: center; padding: 10px; font-weight: bold;">
+                                        <img src="/<%= category.categoryImage %>" alt="Category Image"
+                                            style="border-radius: 50%; margin-right: 10px; width: 30px; height: 30px;">
+                                        <input type="radio" name="category" value="<%= category._id %>"
+                                            class="me-2 category-radio" style="margin-right: 5px;">
+                                        <%= category.name %>
+                                    </label>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    </div>
+
+                    <!-- Subcategory Section -->
+                    <div style="flex: 1; min-width: 250px; max-height: 80vh; overflow-y: auto;">
+                        <h5 style="font-weight: bold;">Subcategories</h5>
+                        <ul id="subcategoryList" style="list-style: none; padding: 0;">
+                            <% subcategory.forEach(subcat => { %>
+                                <li class="subcategory-item" data-category="<%= subcat.category._id %>"
+                                    style="display: none;">
+                                    <label style="display: flex; align-items: center; padding: 10px;">
+                                        <input type="radio" name="subcategory" value="<%= subcat._id %>"
+                                            style="margin-right: 5px;">
+                                        <%= subcat.name %>
+                                    </label>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Price Range -->
+                <div style="margin-top: 20px;">
+                    <label for="minPrice" style="display: block; margin-bottom: 5px;">Min Price</label>
+                    <input type="number" id="minPrice" name="minPrice" placeholder="0"
+                        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+
+                    <label for="maxPrice" style="display: block; margin-top: 10px; margin-bottom: 5px;">Max Price</label>
+                    <input type="number" id="maxPrice" name="maxPrice" placeholder="10000"
+                        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                </div>
+
+                <button type="submit"
+                    style="margin-top: 20px; width: 100%; padding: 10px; background: blue; color: white; border: none; border-radius: 5px;">
+                    Apply Filters
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+  <!-- Category Selection Modal -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const categoryRadios = document.querySelectorAll(".category-radio");
+        const subcategoryItems = document.querySelectorAll(".subcategory-item");
+    
+        categoryRadios.forEach(radio => {
+            radio.addEventListener("change", function () {
+                const selectedCategory = this.value;
+    
+                // Hide all subcategories initially
+                subcategoryItems.forEach(item => {
+                    item.style.display = "none";
+                });
+    
+                // Show subcategories that match the selected category
+                document.querySelectorAll(`[data-category='${selectedCategory}']`).forEach(item => {
+                    item.style.display = "block";
+                });
+            });
+        });
+    });
+    </script>
   
   
 

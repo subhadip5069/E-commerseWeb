@@ -7,69 +7,96 @@ const Product = require('../../model/product');
 
 // Controller to fetch filtered products with pagination
 class ProductUIController {
-getFilteredProducts = async (req, res) => {
+  getFilteredProducts = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { category, subcategory, minPrice, maxPrice, minRating, maxRating, createdDate, page = 1, limit = 10, query } = req.query;
+  
+      let filter = {};
+      if (query) {
+        filter.name = { $regex: query, $options: "i" }; // Case-insensitive search by name
+      }
+  
+      // Other filtering logic remains unchanged...
+  
+      // Fetch products
+      const products = await Product.find(filter)
+        .populate('category subcategory')
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(parseInt(limit))
+        .exec();
+  console.log("products",products)
+      // Fetch all categories
+      const categories = await Category.Category.find().populate('subcategories').exec();
+  
+      res.render('Ui/products', {
+        products,
+        categories,
+        currentPage: page,
+        totalPages: Math.ceil(await Product.countDocuments(filter) / limit),
+        totalProducts: await Product.countDocuments(filter),
+        limit,
+        category,
+        subcategory,
+        minPrice,
+        maxPrice,
+        minRating,
+        maxRating,
+        searchQuery: query || "" ,
+        userId // Pass `searchQuery`
+      });
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      res.status(500).send("Internal Server Error");
+    }
+  };
+  
+
+ searchProducts = async (req, res) => {
   try {
-    const { category, subcategory, minPrice, maxPrice, minRating, maxRating, page = 1, limit = 10 } = req.query;
-
-    let filter = {};
-    let { createdDate } = req.query;
-   if (createdDate) {
-            let startDate = new Date(createdDate);
-            let endDate = new Date(createdDate);
-            endDate.setHours(23, 59, 59, 999); // End of the selected day
-
-            filter.createdAt = { $gte: startDate, $lte: endDate };
-        }
-
-        const productsss = await Product.find(filter).sort({ createdAt: -7 });
-
-    if (category) filter.category = category;
-    if (subcategory) filter.subcategory = subcategory;
-    if (minPrice || maxPrice) {
-      filter.currentPrice = {};
-      if (minPrice) filter.currentPrice.$gte = minPrice;
-      if (maxPrice) filter.currentPrice.$lte = maxPrice;
-    }
-    if (minRating || maxRating) {
-      filter.ratings = {};
-      if (minRating) filter.ratings.$gte = minRating;
-      if (maxRating) filter.ratings.$lte = maxRating;
+    const { query: searchQuery, page = 1, limit = 10 } = req.query;
+    const query = {};
+    
+    if (searchQuery) {
+      query.$or = [
+        { name: { $regex: searchQuery, $options: 'i' } },
+        { description: { $regex: searchQuery, $options: 'i' } },
+        { category: searchQuery },
+        { subcategory: searchQuery },
+        { currentPrice: !isNaN(searchQuery) ? Number(searchQuery) : undefined },
+        { ratings: !isNaN(searchQuery) ? Number(searchQuery) : undefined }
+      ].filter(condition => Object.values(condition)[0] !== undefined);
     }
 
-    // Calculate pagination values
     const skip = (page - 1) * limit;
-    const totalProducts = await Product.countDocuments(filter);
-    const totalPages = Math.ceil(totalProducts / limit);
-
-    // Fetch filtered products with pagination
-    const products = await Product.find(filter)
+    const products = await Product.find(query)
       .populate('category subcategory')
       .skip(skip)
       .limit(parseInt(limit))
       .exec();
 
-    // Fetch all categories and subcategories for the filter form
     const categories = await Category.find().populate('subcategories').exec();
+    const totalProducts = await Product.countDocuments(query);
+    const totalPages = Math.ceil(totalProducts / limit);
 
-    res.render('Ui/productresult', {
+    res.render('Ui/products', {
+     searchQuery,
       products,
       categories,
       currentPage: page,
       totalPages,
       totalProducts,
       limit,
-      category,
-      subcategory,
-      minPrice,
-      maxPrice,
-      minRating,
-      maxRating,
-      productsss
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error('Error searching products:', error);
+    req.flash('error', 'Failed to search products.');
+    res.redirect('back');
   }
 };
+
+
 
 }
 

@@ -19,10 +19,9 @@
         <!-- Center Section: Navigation Links -->
         <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-uppercase fw-bold">
           <li class="nav-item"> 
-            <form class="d-flex me-3">
-              <input class="form-control me-2" type="search" placeholder="Search products..." aria-label="Search">
-              <button class="btn btn-outline-success" type="submit"><i class="fa fa-search"></i></button>
-            </form>
+          
+            
+            
           </li>
           <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
@@ -36,10 +35,11 @@
                 <img src="/images/sample-image.jpg" alt="Profile" class="rounded-circle" width="40" height="40">
               </button>
               <ul class="dropdown-menu dropdown-menu-end shadow">
-                <% if (userId.role === 'user') { %>
+                <% if (userId && userId.role === 'user' || userId && userId.role === 'admin') { %>
                   <li class="dropdown-header text-center">
                     <img src="/images/sample-image.jpg" alt="Profile" class="rounded-circle mb-2" width="50" height="50">
                     <p class="fw-bold mb-0"><%= userId.username || 'Guest User' %></p>
+                  
                     <p class="text-muted small mb-1"><%= userId.email %></p>
                   </li>
                   <li><hr class="dropdown-divider"></li>
