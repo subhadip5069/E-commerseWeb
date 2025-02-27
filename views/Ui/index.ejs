@@ -273,12 +273,15 @@
                     <div class="row g-3">
                       <% for (let j = i; j < i + 4 && j < categories.length; j++) { %>
                         <div class="col-6 text-center">
-                          <a href="/products?category=<%= categories[j]._id %>" class="nav-link">
+                          <form action="/filter" method="GET">
+                            <input type="hidden" name="category" value="<%= categories[j]._id %>">
+                          <button type="submit" class="nav-link">
                             <img src="/<%= categories[j].categoryImage %>" class="rounded-circle border shadow-sm" 
                                  alt="<%= categories[j].name %>" 
                                  style="height: 60px; width: 60px; object-fit: cover;">
                             <p class="fs-6 mt-2"><%= categories[j].name %></p>
-                          </a>
+                          </button>
+                        </form>
                         </div>
                       <% } %>
                     </div>
@@ -1405,7 +1408,7 @@
       </div>
     </section>
     <!-- modal -->
-<% if (userId.role !=='user' ) { %>
+<% if (userId.role !=='user' && userId.role !=='admin' ) { %>
    <!-- Modal -->
 <!-- Modal -->
 <div class="modal fade" id="carouselModal" tabindex="-1" aria-hidden="true">

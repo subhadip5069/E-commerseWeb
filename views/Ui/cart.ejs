@@ -156,32 +156,32 @@
       <div class="row">
         <!-- Cart Items -->
         <div class="col-lg-8">
-          
+          <% if (cart.length > 0) { %>
             <% cart.forEach(item => { %>
-              <div class="cart-item d-flex align-items-center">
-                <img src="<%= item.product.images[0] %>" alt="Product Image" style="max-width: 120px;">
-                <div style="flex-grow: 1;">
-                  <h5><%= item.product.name %></h5>
-                  <p>Unit Price:₹<span class="price" data-price="<%= item.product.currentPrice %>"><%= item.product.currentPrice %></span></p>
-                  
-                  <div class="d-flex align-items-center">
-                    <form action="/cart/cart/update-quantity/<%= item._id %>" method="post" class="d-flex align-items-center " style="gap: 10px;">
-                      <label>Quantity:</label>
-                      <input type="number" class="form-control quantity" data-id="<%= item._id %>"name="quantity" value="<%= item.quantity %>" min="1">
-                      <button type="submit" class="btn btn-primary">save</button>
-                    </form>
+              <% if (item.product) { %>
+                <div class="cart-item d-flex align-items-center">
+                  <img src="/<%= item.product.images[0] %>" alt="Product Image" style="max-width: 120px;">
+                  <div style="flex-grow: 1;">
+                    <h5><%= item.product.name %></h5>
+                    <p>Unit Price: ₹<%= item.product.currentPrice %></p>
+                    <p>Quantity: <%= item.quantity %></p>
+                    <p>Total: ₹<%= (item.product.currentPrice * item.quantity).toFixed(2) %></p>
                   </div>
-              
-                  <p><strong>Total:₹<span class="total-item-price"><%= (item.product.currentPrice * item.quantity).toFixed(2) %></span></strong></p>
-              
-                  <form action="/cart/<%= item._id %>" method="get">
-                    
-                    <button type="submit" class="btn btn-danger">Remove</button>
-                  </form>
                 </div>
-              </div>
-              
-            <% }); %>
+              <% } else { %>
+                <div class="cart-item d-flex align-items-center">
+                  <strong>Product Not Available</strong>
+                  <p>This product has been removed.</p>
+                </div>
+              <% } %>
+            <% }) %>
+          <% } else { %>
+            <div class="cart-item d-flex align-items-center " style="background-image: url('/background-web.jpg'); background-size: cover;">
+              <strong>No items in cart</strong>
+            </div>
+          <% } %>
+          
+          
          
         </div>
   

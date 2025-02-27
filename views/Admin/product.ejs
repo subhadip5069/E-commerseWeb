@@ -282,8 +282,8 @@
                 <td><%= product.images.length %></td>
                 <td><%= product.ratings || 'N/A' %> star</td>
                 <td>
-                  <a href="/products/edit/<%= product._id %>" class="btn btn-sm btn-warning">Edit</a>
-                  <form action="/products/delete/<%= product._id %>" method="POST" style="display:inline;">
+                  <a href="/admin/products/get/<%= product._id %>" class="btn btn-sm btn-warning">Edit</a>
+                  <form action="/admin/product/product/delete/<%= product._id %>" method="get" style="display:inline;">
                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete</button>
                   </form>
                   <a href="/products/view/<%= product._id %>" class="btn btn-sm btn-info">View</a>

@@ -19,17 +19,22 @@ const userId = req.user;
 
         console.log(userId);
         const banner = await Banner.Banner.find();
+        const searchQuery = req.query.query || '';
         const categories = await Category.Category.find();
         const subcategories = await Category.Subcategory.find().populate("category");
-        const products = await Product.find().populate('category subcategory');
+        const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
+        
+           
         res.render('Ui/index',{
             title:"index",
             
              categories,
+            
             subcategory:subcategories,
             products,
             banners:banner,
-            userId
+            userId,
+            searchQuery
 
         });
     };
@@ -42,11 +47,13 @@ const userId = req.user;
     about  = async (req,res) => {
         try {
          const userId =  req.user ;
-
+         const searchQuery = req.query.query || '';
         const banner = await Banner.Banner.find();
         const categories = await Category.Category.find();
         const subcategories = await Category.Subcategory.find().populate("category");
-        const products = await Product.find().populate('category subcategory');
+        const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
+       
+           
             const abouts = await about.About.find(); // Fetch all about records from the database
             res.render('Ui/about', {
                  abouts , categories,
@@ -54,7 +61,8 @@ const userId = req.user;
                  subcategory:subcategories,
                  products,
                  banners:banner,
-                 userId
+                 userId,
+                 searchQuery
                 }); // Pass abouts to the EJS template
         } catch (error) {
             console.error('Error fetching about data:', error);
@@ -65,10 +73,12 @@ const userId = req.user;
     contactUs =async (req,res) => {
         
         const banner = await Banner.Banner.find();
+        const searchQuery = req.query.query || '';
         const categories = await Category.Category.find();
         const subcategories = await Category.Subcategory.find().populate("category");
-        const products = await Product.find().populate('category subcategory');
+        const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
         const userId = req.user;
+       
 
       
         res.render('Ui/contactus',{
@@ -78,58 +88,65 @@ const userId = req.user;
             subcategory:subcategories,
                  products,
                  banners:banner,
+                 
+                 searchQuery
         });
     }
     cart = async (req, res) => {
         try {
-            // ✅ Extract only the user ID
-            const userId = req.user.id ;
+            const userId = req.user.id;
+    
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                req.flash("error_msg", "Invalid user ID");
+                return res.redirect("/carts");
+            }
+    
             const banner = await Banner.Banner.find();
+            const searchQuery = req.query.query || '';
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
-            const products = await Product.find().populate("category subcategory");
+            const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate("category subcategory");
+            
+            // Fetch cart items and populate the product field
             const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
+            console.log("Cart Items Before Filtering:", cartItems);
+    
+            // Filter out items where product is null
+            const validCartItems = cartItems.filter(item => item.product !== null);
+            console.log("Valid Cart Items After Filtering:", validCartItems);
+    
             const addresses = await address.find({ user: userId });
-            
-            if(!userId){
-                res.redirect("/carts");
-                
-            }
     
-            // ✅ Validate the ObjectId before querying
-            if (!mongoose.Types.ObjectId.isValid(userId)) {
-                res.flash("error_msg", "Invalid user ID");
-                res.redirect("/carts");
-            }
-    
-            // Fetch data
-            
-    
-            // Render the cart page
             res.render("Ui/cart", {
                 title: "Cart",
                 categories,
                 subcategory: subcategories,
                 products,
                 banners: banner,
-                cart:cartItems,
-                cartItems,
+                cart: validCartItems, // Only valid cart items
                 userId,
-                addresses
+                addresses,
+                searchQuery
             });
     
         } catch (error) {
             console.error("Error fetching cart:", error);
             res.redirect("/carts");
         }
-    }
+    };
+    
     carts=async(req,res) =>{
-        const userId = null;
+        const userId = req.user.id || null;
             const banner = await Banner.Banner.find();
+            const searchQuery = req.query.query || '';
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
-            const products = await Product.find().populate("category subcategory");
-            const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
+            const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate("category subcategory");
+            const cartItems = await Cart.Cart.find({ user: req.user.id }).populate("product");
+            const validCartItems = cartItems.filter(item => item.product !== null);
+            console.log(validCartItems);
+            console.log(cartItems);
+            
             res.render("Ui/carts", {
                 title: "Cart",
                 
@@ -137,8 +154,10 @@ const userId = req.user;
             subcategory: subcategories,
             products,
             banners: banner,
-            cartItems,
-            userId
+            cartItems: validCartItems,
+            userId,
+            searchQuery
+           
     });
 
 
@@ -148,9 +167,9 @@ const userId = req.user;
         try {
            
     
-            const userId = req.user.id; // Extract user ID
+            const userId = req.user.id || null; // Extract user ID
             console.log("User ID:", userId);
-    
+            const searchQuery = req.query.query || '';
             const banner = await Banner.Banner.find();
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
@@ -173,7 +192,8 @@ const userId = req.user;
                 cart: cartItems,
                 banners: banner,
                 userId,
-                product: products
+                product: products,
+                searchQuery
             });
         } catch (error) {
             console.error("Error fetching product:", error);
@@ -189,10 +209,11 @@ const userId = req.user;
     productDetails = async (req, res) => {
         try {
             const userId = req.user;
+            const searchQuery = req.query.query || '';
             const banner = await Banner.Banner.find();
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
-            const products = await Product.find().populate('category subcategory');
+            const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
             // const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
             
             const product = await Product.findById( req.params.id).populate("category subcategory");
@@ -207,7 +228,8 @@ const userId = req.user;
                 products,
                 banners: banner,
                 // cartItems,
-                userId
+                userId,
+                searchQuery
             });
         } catch (error) {
             res.redirect("/products");
@@ -220,13 +242,17 @@ const userId = req.user;
             const page = parseInt(req.query.page) || 1;
             const limit = 6; // Number of products per page
             const skip = (page - 1) * limit;
-    
+             // Get search query from URL params
+             const { category, subcategory, minPrice, maxPrice, minRating, maxRating } = req.query;
+          
+
             // Fetch Data
             const banner = await Banner.Banner.find();
             const categories = await Category.Category.find({});
             const subcategories = await Category.Subcategory.find().populate("category");
             const totalProducts = await Product.countDocuments();
-            const products = await Product.find()
+            const searchQuery = req.query.query || '';
+            const products = await Product.find({ name: new RegExp(searchQuery, 'i') })
                 .populate("category subcategory")
                 .skip(skip)
                 .limit(limit);
@@ -235,6 +261,31 @@ const userId = req.user;
                 const selectedCategory = req.query.category || ""; 
                 const selectedSubcategory = req.query.subcategory || "";
                 const selectedPrice = req.query.price || "";
+                if (category) {
+                    filter.category = category;
+                  }
+              
+                  if (subcategory) {
+                    filter.subcategory = subcategory;
+                  }
+              
+                  if (minPrice || maxPrice|| minRating || maxRating) {
+                    filter.currentPrice = {};
+                    if (minPrice) {
+                      filter.currentPrice.$gte = parseFloat(minPrice);
+                    }
+                    if (maxPrice) {
+                      filter.currentPrice.$lte = parseFloat(maxPrice);
+                    }
+                    if (minRating) {
+                      filter.ratings.$gte = parseFloat(minRating);
+                    }
+                    if (maxRating) {
+                      filter.ratings.$lte = parseFloat(maxRating);
+                    }
+        
+                  }
+        
             
                 
             const totalPages = Math.ceil(totalProducts / limit);
@@ -244,6 +295,7 @@ const userId = req.user;
                 categories,
                 subcategory: subcategories,
                 subcategories,
+                category:categories,
                 products,
                 banners: banner,
                 userId,
@@ -251,7 +303,12 @@ const userId = req.user;
                 currentPage: page,
                 selectedCategory,
                 selectedSubcategory,
-                selectedPrice
+                selectedPrice,
+                searchQuery,
+                minPrice,
+                maxPrice,
+                minRating,
+                maxRating
             });
         } catch (error) {
             res.redirect("/");
@@ -259,61 +316,94 @@ const userId = req.user;
     };
     filterProducts = async (req, res) => {
         try { 
-            
             const userId = req.user;
             const page = parseInt(req.query.page) || 1;
-            const limit = 6; // Number of products per page
+            const limit = 6; // Products per page
             const skip = (page - 1) * limit;
+            const searchQuery = req.query.query || '';
     
-
-          const { category, subcategory, minPrice, maxPrice } = req.query;
-          const banner = await Banner.Banner.find();
+            const { category, subcategory, minPrice, maxPrice, minRating, maxRating, sortBy } = req.query;
+    
+            // Fetch categories, subcategories, and banners
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
-            const totalProducts = await Product.countDocuments();
-           
-          // Create a filter object
-          let filter = {};
-      
-          if (category) {
-            filter.category = category;
-          }
-      
-          if (subcategory) {
-            filter.subcategory = subcategory;
-          }
-      
-          if (minPrice || maxPrice) {
-            filter.currentPrice = {};
-            if (minPrice) {
-              filter.currentPrice.$gte = parseFloat(minPrice);
+            const banner = await Banner.Banner.find();
+    
+            // Create filter object
+            let filter = {};
+    
+            if (category) filter.category = category;  // ✅ Filter by category
+            if (subcategory) filter.subcategory = subcategory;
+    
+            if (minPrice || maxPrice) {
+                filter.currentPrice = {};
+                if (minPrice) filter.currentPrice.$gte = Number(minPrice);
+                if (maxPrice) filter.currentPrice.$lte = Number(maxPrice);
             }
-            if (maxPrice) {
-              filter.currentPrice.$lte = parseFloat(maxPrice);
+    
+            if (minRating || maxRating) {
+                filter.ratings = {};
+                if (minRating) filter.ratings.$gte = Number(minRating);
+                if (maxRating) filter.ratings.$lte = Number(maxRating);
             }
-          }
-      
-          // Fetch filtered products
-          const products = await Product.find(filter)
-            .populate('category', 'name') 
-            .populate('subcategory', 'name');
-      
-          res.render('Ui/products', { products, categories, subcategory: subcategories, banners: banner, userId, currentPage: page, totalPages: Math.ceil(totalProducts / limit) }); // Ensure 'products.ejs' exists
+    
+            if (searchQuery) {
+                filter.name = new RegExp(searchQuery, 'i');
+            }
+    
+            // Sorting Options
+            const validSortOptions = {
+                newest: { createdAt: -1 },
+                oldest: { createdAt: 1 },
+                priceLow: { currentPrice: 1 },
+                priceHigh: { currentPrice: -1 },
+                ratingHigh: { ratings: -1 },
+                ratingLow: { ratings: 1 }
+            };
+            const sortOption = validSortOptions[sortBy] || { createdAt: -1 }; // Default: Newest products first
+    
+            // Count products for pagination
+            const totalFilteredProducts = await Product.countDocuments(filter);
+    
+            // Fetch products based on filter, sorting, and pagination
+            const products = await Product.find(filter)
+                .populate('category', 'name') 
+                .populate('subcategory', 'name')
+                .sort(sortOption)
+                .skip(skip)
+                .limit(limit);
+    
+            res.render('Ui/productresult', {
+                searchQuery,
+                products,
+                categories,
+                subcategory: subcategories, 
+                banners: banner,
+                userId, 
+                currentPage: page, 
+                selectedCategory: category,  // ✅ Pass selected category to UI
+                totalPages: Math.ceil(totalFilteredProducts / limit), 
+                maxPrice,
+                minPrice,
+                minRating,
+                maxRating,
+                sortBy
+            });
+    
         } catch (error) {
-          res.redirect('/products');
+            console.error("Error in filterProducts:", error);
+            res.redirect('/products');
         }
-      };
-    
-    
+    };
     
     bill =async(req,res) =>{
         const userId = req.user;
 
-
+        const searchQuery = req.query.query || '';
         const banner = await Banner.Banner.find();
         const categories = await Category.Category.find();
         const subcategories = await Category.Subcategory.find().populate("category");
-        const products = await Product.find().populate('category subcategory');
+        const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
         const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
         
         res.render('Ui/bill',{
@@ -323,6 +413,7 @@ const userId = req.user;
             products,
             banners:banner,
             cartItems,
+            searchQuery
 
         })
     }
@@ -331,20 +422,21 @@ const userId = req.user;
             const page = parseInt(req.query.page) || 1; // Default to page 1
             const limit = parseInt(req.query.limit) || 5; // Default to 5 orders per page
             const skip = (page - 1) * limit;
+            const searchQuery = req.query.query || '';
     
-            const userId = req.user.id;
+            const userId = req.user;
             console.log("User ID:", userId);
     
             const banner = await Banner.Banner.find();
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
-            const products = await Product.find().populate("category subcategory");
+            const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate("category subcategory");
             console.log("Products:", products);
     
-            const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
+            const cartItems = await Cart.Cart.find({ user: req.user.id }).populate("product");
     
             // Fetch orders with proper population
-            const orders = await Bill.find({ userid: userId })
+            const orders = await Bill.find({ userid: req.user.id })
             .populate("userid", "name email") 
             .populate({
                 path: "purchaseid",
@@ -364,7 +456,7 @@ const userId = req.user;
     
             console.log("Orders:", JSON.stringify(orders, null, 2)); // Debugging
     
-            const totalOrders = await Bill.countDocuments({ userid: userId });
+            const totalOrders = await Bill.countDocuments({ userid: req.user.id });
             const totalPages = Math.ceil(totalOrders / limit);
     
             res.render('Ui/Orderhistory', {
@@ -377,13 +469,14 @@ const userId = req.user;
                 cartItems,
                 orders,
                 currentPage: page,
-                totalPages
+                totalPages,
+                searchQuery
             });
     
         } catch (error) {
             console.error("Error in fetching order history:", error);
         res.session.error_msg = "Failed to fetch order history. Please try again.";
-        res.redirect("/orderhistory");
+        res.redirect("/login");
         }
     };
     
@@ -395,12 +488,12 @@ const userId = req.user;
 
         const userId = req.user?.id;
         console.log(userId,"profile");
-
+        const searchQuery = req.query.query || '';
 
         const banner = await Banner.Banner.find();
         const categories = await Category.Category.find();
         const subcategories = await Category.Subcategory.find().populate("category");
-        const products = await Product.find().populate('category subcategory');
+        const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
         const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
         const profile = await user.findById(userId);
         const addresses = await address.find({ user: userId });
@@ -413,19 +506,20 @@ const userId = req.user;
             banners:banner,
             cartItems,
             profile,
-            addresses
+            addresses,
+            searchQuery
         })
 
     }
     orderDetails = async (req,res)=>{
         try {
-            const userId = req.user.id;
+            const userId = req.user;
             console.log("User ID:", userId);
-    
+            const searchQuery = req.query.query || '';
             const banner = await Banner.Banner.find();
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
-            const products = await Product.find().populate("category subcategory");
+            const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate("category subcategory");
             console.log("Products:", products);
     
             const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
@@ -451,11 +545,13 @@ const userId = req.user;
         res.render('Ui/orderDetails',{
             title:"OrderDetails",
             categories,
-            userId,subcategory:subcategories,
+            userId,
+            subcategory:subcategories,
             products,
             banners:banner,
             cartItems,
-            order:orders
+            order:orders,
+            searchQuery
         })
     }
     catch (error) {
