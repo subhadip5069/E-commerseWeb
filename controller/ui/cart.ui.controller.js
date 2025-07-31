@@ -57,11 +57,11 @@ class CartController {
             console.log(deletedItem,"deletedItem");
             
 
-            req.flash('success_msg' = "Product removed from cart successfully.";
+            req.flash('success_msg', "Product removed from cart successfully.");
             res.redirect("/cart");
         } catch (error) {
             console.error("Error removing cart item:", error);
-            req.flash("error_msg" = "Failed to remove product from cart.";
+            req.flash("error_msg", "Failed to remove product from cart.");
             res.redirect("/login");
         }
     }
