@@ -49,7 +49,34 @@ const ProductSchema = new mongoose.Schema(
         message: 'You can upload up to 10 images only.',
       },
     },
-    
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+    isNewArrival: {
+      type: Boolean,
+      default: false,
+    },
+    isOnSale: {
+      type: Boolean,
+      default: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    sortOrder: {
+      type: Number,
+      default: 0,
+    },
+    seoTitle: {
+      type: String,
+      default: function() { return this.name; }
+    },
+    seoDescription: {
+      type: String,
+      default: function() { return this.description; }
+    },
     slug: {
       type: String,
       unique: true,
@@ -57,6 +84,14 @@ const ProductSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Add indexes for better performance
+ProductSchema.index({ isActive: 1, isFeatured: 1, sortOrder: 1 });
+ProductSchema.index({ isActive: 1, isNewArrival: 1, createdAt: -1 });
+ProductSchema.index({ isActive: 1, isOnSale: 1 });
+ProductSchema.index({ category: 1, isActive: 1 });
+ProductSchema.index({ subcategory: 1, isActive: 1 });
+ProductSchema.index({ name: 'text', description: 'text' });
 
 // Pre-save hook to generate SEO-friendly slug
 ProductSchema.pre('save', function (next) {

@@ -12,31 +12,150 @@ const { Bill } = require("../../model/bill");
 
 class UserUiController {
 
-    index =async (req, res) => {
+    index = async (req, res) => {
+        try {
+            console.log("req.user", req.user);
+            const userId = req.user;
+            const searchQuery = req.query.query || '';
 
-console.log("req.user",req.user);
-const userId = req.user;
+            // Fetch all dynamic data in parallel for better performance
+            const [
+                heroBanners,
+                promotionalOffers,
+                categories,
+                subcategories,
+                featuredProducts,
+                newArrivalProducts,
+                saleProducts,
+                allProducts,
+                banners
+            ] = await Promise.all([
+                // Hero banners for main carousel
+                require('../../model/heroBanner').find({ 
+                    isActive: true, 
+                    displayType: 'hero' 
+                }).sort({ sortOrder: 1 }),
 
-        console.log(userId);
-        const banner = await Banner.Banner.find();
-        const searchQuery = req.query.query || '';
-        const categories = await Category.Category.find();
-        const subcategories = await Category.Subcategory.find().populate("category");
-        const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
-        
-           
-        res.render('Ui/index',{
-            title:"index",
-            
-             categories,
-            
-            subcategory:subcategories,
-            products,
-            banners:banner,
-            userId,
-            searchQuery
+                // Promotional offers for banner sections
+                require('../../model/offers').find({ 
+                    isActive: true,
+                    validFrom: { $lte: new Date() },
+                    validTo: { $gte: new Date() }
+                }).sort({ sectionType: 1, sortOrder: 1 }),
 
-        });
+                // Categories for navigation
+                Category.Category.find({ isActive: { $ne: false } }).sort({ sortOrder: 1, name: 1 }),
+
+                // Subcategories for navigation
+                Category.Subcategory.find({ isActive: { $ne: false } })
+                    .populate("category")
+                    .sort({ sortOrder: 1, name: 1 }),
+
+                // Featured products section
+                Product.find({ 
+                    isActive: true, 
+                    isFeatured: true,
+                    stock: { $gt: 0 }
+                }).populate('category subcategory')
+                  .sort({ sortOrder: 1, createdAt: -1 })
+                  .limit(8),
+
+                // New arrival products
+                Product.find({ 
+                    isActive: true, 
+                    isNewArrival: true,
+                    stock: { $gt: 0 }
+                }).populate('category subcategory')
+                  .sort({ createdAt: -1 })
+                  .limit(8),
+
+                // Sale products
+                Product.find({ 
+                    isActive: true, 
+                    isOnSale: true,
+                    stock: { $gt: 0 }
+                }).populate('category subcategory')
+                  .sort({ sortOrder: 1, createdAt: -1 })
+                  .limit(8),
+
+                // All products for search functionality
+                searchQuery 
+                    ? Product.find({ 
+                        isActive: true,
+                        $or: [
+                            { name: new RegExp(searchQuery, 'i') },
+                            { description: new RegExp(searchQuery, 'i') }
+                        ]
+                      }).populate('category subcategory')
+                        .sort({ isFeatured: -1, createdAt: -1 })
+                    : Product.find({ isActive: true })
+                        .populate('category subcategory')
+                        .sort({ isFeatured: -1, isNewArrival: -1, createdAt: -1 })
+                        .limit(20),
+
+                // Legacy banner support
+                Banner.Banner.find({ isActive: { $ne: false } }).sort({ sortOrder: 1 })
+            ]);
+
+            // Group promotional offers by section type
+            const offersBySectionType = {
+                sale: promotionalOffers.filter(offer => offer.sectionType === 'sale'),
+                combo: promotionalOffers.filter(offer => offer.sectionType === 'combo'),
+                discount: promotionalOffers.filter(offer => offer.sectionType === 'discount'),
+                banner: promotionalOffers.filter(offer => offer.sectionType === 'banner')
+            };
+
+            // Calculate statistics for admin reference
+            const stats = {
+                totalProducts: await Product.countDocuments({ isActive: true }),
+                featuredCount: featuredProducts.length,
+                newArrivalCount: newArrivalProducts.length,
+                saleCount: saleProducts.length,
+                totalCategories: categories.length,
+                activeOffers: promotionalOffers.length
+            };
+
+            res.render('Ui/index', {
+                title: "Dynamic E-Commerce Store",
+                // User data
+                userId,
+                searchQuery,
+                
+                // Dynamic banners and offers
+                heroBanners,
+                banners, // Legacy support
+                offers: offersBySectionType,
+                
+                // Product sections
+                products: allProducts,
+                featuredProducts,
+                newArrivalProducts,
+                saleProducts,
+                
+                // Navigation data
+                categories,
+                subcategory: subcategories,
+                
+                // Statistics (can be used in admin or for conditional rendering)
+                stats,
+                
+                // Helper functions for templates
+                helpers: {
+                    formatPrice: (price) => `₹${price.toLocaleString()}`,
+                    calculateDiscount: (original, current) => 
+                        Math.round(((original - current) / original) * 100),
+                    truncateText: (text, length = 50) => 
+                        text.length > length ? text.substring(0, length) + "..." : text
+                }
+            });
+
+        } catch (error) {
+            console.error("Error loading homepage:", error);
+            res.status(500).render('error', { 
+                message: "Unable to load homepage", 
+                error: process.env.NODE_ENV === 'development' ? error : {} 
+            });
+        }
     };
     login = async (req,res) =>{
         res.render('Ui/login',{messages: req.flash()})
