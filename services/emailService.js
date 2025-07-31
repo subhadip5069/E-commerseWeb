@@ -2,24 +2,43 @@ const brevo = require('@getbrevo/brevo');
 
 class EmailService {
     constructor() {
-        // Initialize Brevo API client
-        this.apiInstance = new brevo.TransactionalEmailsApi();
-        
-        // Set API key
-        const apiKey = brevo.ApiClient.instance.authentications['api-key'];
-        apiKey.apiKey = process.env.BREVO_API_KEY;
-        
-        // Default sender info
-        this.defaultSender = {
-            email: process.env.BREVO_SENDER_EMAIL,
-            name: process.env.BREVO_SENDER_NAME || 'E-Commerce Store'
-        };
+        try {
+            // Initialize Brevo API client
+            this.apiInstance = new brevo.TransactionalEmailsApi();
+            
+            // Set API key using the correct method
+            if (brevo.ApiClient && brevo.ApiClient.instance) {
+                const defaultClient = brevo.ApiClient.instance;
+                const apiKey = defaultClient.authentications['api-key'];
+                if (apiKey) {
+                    apiKey.apiKey = process.env.BREVO_API_KEY;
+                }
+            }
+            
+            // Default sender info
+            this.defaultSender = {
+                email: process.env.BREVO_SENDER_EMAIL || 'noreply@ecommerce.com',
+                name: process.env.BREVO_SENDER_NAME || 'E-Commerce Store'
+            };
+            
+            this.isConfigured = !!(process.env.BREVO_API_KEY && this.defaultSender.email);
+        } catch (error) {
+            console.error('Failed to initialize Brevo email service:', error);
+            this.isConfigured = false;
+            this.apiInstance = null;
+        }
     }
 
     /**
      * Send OTP verification email
      */
     async sendOTPEmail(recipientEmail, recipientName, otp) {
+        if (!this.isConfigured) {
+            console.log('Brevo not configured, skipping OTP email to:', recipientEmail);
+            console.log('OTP for development:', otp);
+            return { success: true, messageId: 'dev-mode-skip' };
+        }
+
         try {
             const sendSmtpEmail = new brevo.SendSmtpEmail();
             
@@ -34,6 +53,11 @@ class EmailService {
             return { success: true, messageId: result.response?.messageId };
         } catch (error) {
             console.error('Error sending OTP email:', error);
+            // In development, don't fail completely
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Development mode: OTP =', otp);
+                return { success: true, messageId: 'dev-fallback' };
+            }
             throw new Error('Failed to send verification email');
         }
     }
@@ -42,6 +66,11 @@ class EmailService {
      * Send welcome email after successful registration
      */
     async sendWelcomeEmail(recipientEmail, recipientName) {
+        if (!this.isConfigured) {
+            console.log('Brevo not configured, skipping welcome email to:', recipientEmail);
+            return { success: true, messageId: 'dev-mode-skip' };
+        }
+
         try {
             const sendSmtpEmail = new brevo.SendSmtpEmail();
             
@@ -65,6 +94,12 @@ class EmailService {
      * Send password reset email
      */
     async sendPasswordResetEmail(recipientEmail, recipientName, resetToken) {
+        if (!this.isConfigured) {
+            console.log('Brevo not configured, skipping password reset email to:', recipientEmail);
+            console.log('Reset token for development:', resetToken);
+            return { success: true, messageId: 'dev-mode-skip' };
+        }
+
         try {
             const sendSmtpEmail = new brevo.SendSmtpEmail();
             
@@ -87,6 +122,11 @@ class EmailService {
      * Send order confirmation email
      */
     async sendOrderConfirmationEmail(recipientEmail, recipientName, orderDetails) {
+        if (!this.isConfigured) {
+            console.log('Brevo not configured, skipping order confirmation email to:', recipientEmail);
+            return { success: true, messageId: 'dev-mode-skip' };
+        }
+
         try {
             const sendSmtpEmail = new brevo.SendSmtpEmail();
             
