@@ -3,8 +3,9 @@ const router = express.Router();
 const paymentController = require('../../controller/ui/payment.ui.controller');
 const { authMiddleware } = require('../../middleware/Auth');
 
-// Order and payment creation
+// Order and payment creation  
 router.post('/create-order', authMiddleware, paymentController.createOrder);
+router.post('/create', authMiddleware, paymentController.createOrder); // Alternative route for compatibility
 
 // Payment verification
 router.post('/verify-payment', authMiddleware, paymentController.verifyPayment);
