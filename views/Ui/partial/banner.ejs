@@ -16,24 +16,36 @@
                     <a href="#" class="btn btn-dark text-uppercase fs-6 rounded-pill px-4 py-3 mt-3">Join Now</a>
                   </div>
                   <div class="row my-5">
-                    <div class="col">
-                      <div class="row text-light">
-                        <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">14k+</p></div>
-                        <div class="col"><p class="text-uppercase lh-sm mb-0">Product Varieties</p></div>
+                    <% if (typeof stats !== 'undefined' && stats.length > 0) { %>
+                      <% stats.slice(0, 3).forEach(stat => { %>
+                        <div class="col">
+                          <div class="row text-light">
+                            <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0"><%= stat.displayValue %></p></div>
+                            <div class="col"><p class="text-uppercase lh-sm mb-0"><%= stat.label %></p></div>
+                          </div>
+                        </div>
+                      <% }); %>
+                    <% } else { %>
+                      <!-- Fallback static content -->
+                      <div class="col">
+                        <div class="row text-light">
+                          <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">500+</p></div>
+                          <div class="col"><p class="text-uppercase lh-sm mb-0">Product Varieties</p></div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col">
-                      <div class="row text-light">
-                        <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">50k+</p></div>
-                        <div class="col"><p class="text-uppercase lh-sm mb-0">Happy Customers</p></div>
+                      <div class="col">
+                        <div class="row text-light">
+                          <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">5k+</p></div>
+                          <div class="col"><p class="text-uppercase lh-sm mb-0">Happy Customers</p></div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col">
-                      <div class="row text-light">
-                        <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">10+</p></div>
-                        <div class="col"><p class="text-uppercase lh-sm mb-0">Store Locations</p></div>
+                      <div class="col">
+                        <div class="row text-light">
+                          <div class="col-auto"><p class="fs-1 fw-bold lh-sm mb-0">10+</p></div>
+                          <div class="col"><p class="text-uppercase lh-sm mb-0">Store Locations</p></div>
+                        </div>
                       </div>
-                    </div>
+                    <% } %>
                   </div>
                 </div>
               </div>

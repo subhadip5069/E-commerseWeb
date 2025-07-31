@@ -3,7 +3,7 @@ const User = require("../../model/user");
 const Purchase = require("../../model/purchase");
 const Address = require("../../model/address");
 const Bill = require("../../model/bill");
-const Cart  = require("../../model/cart");
+const { Cart } = require("../../model/cart");
 const mongoose = require("mongoose");
 
 class BillController {

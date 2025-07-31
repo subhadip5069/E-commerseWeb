@@ -2,13 +2,15 @@ const about = require("../../model/about");
 const  Category  = require("../../model/category");
 const Product = require("../../model/product");
 const Banner = require("../../model/banner");
-const Cart = require("../../model/cart");
+const { Cart } = require("../../model/cart");
 const mongoose = require("mongoose");
 const address = require("../../model/address");
 const user = require("../../model/user");
 const { Bill } = require("../../model/bill");
 const HeroBanner = require("../../model/heroBanner");
 const Offers = require("../../model/offers");
+const Stats = require("../../model/stats");
+const Settings = require("../../model/settings");
 
 
 class UserUiController {
@@ -29,7 +31,9 @@ class UserUiController {
                 newArrivalProducts,
                 saleProducts,
                 allProducts,
-                banners
+                banners,
+                stats,
+                settings
             ] = await Promise.all([
                 // Hero banners for main carousel
                 HeroBanner.find({ 
@@ -95,7 +99,13 @@ class UserUiController {
                         .limit(20),
 
                 // Legacy banner support
-                Banner.Banner.find({ isActive: { $ne: false } }).sort({ sortOrder: 1 })
+                Banner.Banner.find({ isActive: { $ne: false } }).sort({ sortOrder: 1 }),
+
+                // Website statistics
+                Stats.find({ isActive: true }).sort({ sortOrder: 1 }),
+
+                // Website settings
+                Settings.getAllSettings()
             ]);
 
             // Group promotional offers by section type
@@ -139,6 +149,9 @@ class UserUiController {
                 
                 // Statistics (can be used in admin or for conditional rendering)
                 stats,
+                
+                // Website settings
+                settings,
                 
                 // Helper functions for templates
                 helpers: {

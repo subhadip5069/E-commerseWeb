@@ -1,7 +1,7 @@
 const paymentService = require('../../services/paymentService');
 const Order = require('../../model/order');
 const Payment = require('../../model/payment');
-const Cart = require('../../model/cart');
+const { Cart } = require('../../model/cart');
 const Product = require('../../model/product');
 const User = require('../../model/user');
 const crypto = require('crypto');

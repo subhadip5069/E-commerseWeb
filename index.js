@@ -6,6 +6,7 @@ const cookieparser = require('cookie-parser');
 const flash = require('connect-flash');
 const userUiRoutes = require('./router/Ui/index');
 const connectDB = require('./db/db');
+const { injectTemplateVars, initializeDefaults } = require('./middleware/settings');
 
 require('dotenv').config();
 
@@ -44,6 +45,9 @@ app.use((req, res, next) => {
 
 connectDB();
 
+// Initialize default settings and stats
+initializeDefaults();
+
 app.use(cookieparser());
 
 app.use(express.json());
@@ -57,6 +61,9 @@ app.set('views', 'views');
 // public folder
 app.use(express.static('public'));
 app.use('/uploads', express.static(__dirname + '/uploads'));
+
+// Inject common template variables
+app.use(injectTemplateVars);
 
 
 // api routes
