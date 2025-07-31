@@ -150,103 +150,80 @@
       <hr class="text-white">
       <ul class="nav flex-column">
         <!-- Dashboard -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="/admin/dashboard" id="dashboardDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/dashboard">
             <i class="fas fa-home"></i> Dashboard
           </a>
-          <ul class="dropdown-menu" aria-labelledby="dashboardDropdown">
-            <li><a class="dropdown-item" href="/admin/dashboard">View Dashboard</a></li>
-          </ul>
         </li>
       
-        <!-- New User -->
-        <li class="nav-item">
-         <a href="/admin/user" id="newUserDropdown" class="nav-link">
-            <i class="fas fa-user-plus"></i> New User
-          </a>
-        </li>
-     
         <!-- Products -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fa-brands fa-product-hunt"></i> Products
+            <i class="fas fa-box"></i> Products
           </a>
           <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+            <li><a class="dropdown-item" href="/admin/product">All Products</a></li>
             <li><a class="dropdown-item" href="/admin/product/add">Add Product</a></li>
-            <li><a class="dropdown-item" href="/admin/product">View Products</a></li>
           </ul>
         </li>
-      
-        <!-- About -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/about" id="aboutDropdown" role="button" aria-expanded="false">
-            <i class="fa-solid fa-circle-info"></i> About
-          </a>
-        </li>
-        
-        <!-- Banner -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/banner" id="bannerDropdown" role="button" aria-expanded="false">
-            <i class="fa-regular fa-font-awesome"></i> Banner
-          </a>
-        </li>
-      
+
         <!-- Categories -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/category" id="categoriesDropdown" role="button" aria-expanded="false">
-            <i class="fa-solid fa-layer-group"></i> Categories
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-layer-group"></i> Categories
           </a>
+          <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="/admin/category">All Categories</a></li>
+            <li><a class="dropdown-item" href="/admin/subcategory">Subcategories</a></li>
+          </ul>
         </li>
-        
-        <!-- Subcategories -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/subcategory" id="subcategoriesDropdown" role="button" aria-expanded="false">
-            <i class="fa-solid fa-diagram-successor"></i> Subcategories
+
+        <!-- Content Management -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="contentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-edit"></i> Content
           </a>
+          <ul class="dropdown-menu" aria-labelledby="contentDropdown">
+            <li><a class="dropdown-item" href="/admin/banner">Banners</a></li>
+            <li><a class="dropdown-item" href="/admin/poster">Posters</a></li>
+            <li><a class="dropdown-item" href="/admin/about">About Page</a></li>
+          </ul>
         </li>
-        <!-- Posters -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/poster" id="posterDropdown" role="button" aria-expanded="false">
-            <i class="fa-solid fa-diamond"></i> Posters
-          </a>
-        </li>
-        
-        <!-- Purchase -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/purchase" id="purchaseDropdown" role="button" aria-expanded="false">
-            <i class="fa-solid fa-credit-card"></i> Purchase
-          </a>
-        </li>
-      
-      
-        <!-- Purchase Management -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/purchase" id="purchaseDropdown2" role="button" aria-expanded="false">
+
+        <!-- Orders & Payments -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-shopping-cart"></i> Orders
           </a>
+          <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+            <li><a class="dropdown-item" href="/admin/purchase">All Orders</a></li>
+            <li><a class="dropdown-item" href="/admin/booking">Bookings</a></li>
+          </ul>
         </li>
-        
-       
-      
-        <!-- Bookings -->
+
+        <!-- User Management -->
         <li class="nav-item">
-          <a class="nav-link" href="/admin/booking" id="bookingDropdown" role="button" aria-expanded="false">
-            <i class="fas fa-calendar"></i> Bookings
-          </a>
-        </li>
-        
-        <!-- Contacts -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/contact" id="contactsDropdown" role="button" aria-expanded="false">
-            <i class="fas fa-envelope"></i> Contacts
-          </a>
-        </li>
-        
-        <!-- Users -->
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/user" id="usersDropdown" role="button" aria-expanded="false">
+          <a class="nav-link" href="/admin/user">
             <i class="fas fa-users"></i> Users
           </a>
+        </li>
+        
+        <!-- Contact Messages -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/contact">
+            <i class="fas fa-envelope"></i> Contact Messages
+          </a>
+        </li>
+
+        <!-- Settings -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-cog"></i> Settings
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+            <li><a class="dropdown-item" href="/admin/profile">Profile</a></li>
+            <li><a class="dropdown-item" href="/admin/settings">System Settings</a></li>
+          </ul>
         </li>
       </ul>
       

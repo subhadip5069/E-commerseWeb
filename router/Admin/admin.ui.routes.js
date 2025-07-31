@@ -7,6 +7,8 @@ const { AdminauthMiddleware } = require("../../middleware/Auth")
 
 router.get('/',adminUiController.login)
 router.get('/dashboard',AdminauthMiddleware,adminUiController.dashboard)
+router.get('/profile',AdminauthMiddleware,adminUiController.profile)
+router.get('/settings',AdminauthMiddleware,adminUiController.settings)
 router.get('/logout', (req, res) => {
     res.clearCookie('token');
     res.redirect('/admin/');

@@ -8,6 +8,19 @@ class adminUiController {
     dashboard=(req,res) =>{
         res.render('Admin/dashboard',{messages: req.flash()})
     }
+    
+    profile=(req,res) =>{
+        res.render('Admin/profile',{
+            messages: req.flash(),
+            user: req.user
+        })
+    }
+    
+    settings=(req,res) =>{
+        res.render('Admin/settings',{
+            messages: req.flash()
+        })
+    }
    
 
 }
