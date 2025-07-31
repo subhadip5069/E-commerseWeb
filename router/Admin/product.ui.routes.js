@@ -8,6 +8,7 @@ const { AdminauthMiddleware } = require('../../middleware/Auth');
 // ui
 router.get('/',AdminauthMiddleware,productUiController.productUi)
 router.get('/create',AdminauthMiddleware,productUiController.createProductUi)
+router.get('/add',AdminauthMiddleware,productUiController.createProductUi) // Alternative route for add form
 router.get('/update',AdminauthMiddleware,productUiController.updateProductUi)
 // functions
 router.post('/add',AdminauthMiddleware,productupload.array('images', 10),productUiController.createProduct)

@@ -20,11 +20,24 @@ class ProductUIController {
     }
   createProductUi = async (req, res) => {
       try {
+          console.log('Fetching categories for product creation form...');
           const categories = await Category.find({});
-          res.render('Admin/createproduct', { categories });
+          console.log('Categories fetched:', categories.length);
+          
+          res.render('Admin/createproduct', { 
+              categories,
+              success_msg: req.flash('success_msg'),
+              error_msg: req.flash('error_msg')
+          });
       } catch (error) {
-          console.error("Error fetching categories:", error);
-          res.status(500).send("Internal Server Error");
+          console.error("Error in createProductUi:", error);
+          req.flash('error_msg', 'Failed to load product creation form');
+          res.status(500).send(`
+              <h1>Internal Server Error</h1>
+              <p>Failed to load product creation form</p>
+              <p>Error: ${error.message}</p>
+              <a href="/admin/product">Back to Products</a>
+          `);
       }
   };
   
