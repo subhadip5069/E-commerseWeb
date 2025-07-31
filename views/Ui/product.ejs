@@ -247,6 +247,19 @@
                 <input type="hidden" name="gst" value="<%= gst.toFixed(2) %>">
                 <input type="hidden" name="sgst" value="<%= sgst.toFixed(2) %>">
                 <input type="hidden" name="total" value="<%= total.toFixed(2) %>">
+                
+                <!-- Default shipping address (should be collected from user) -->
+                <input type="hidden" name="shippingAddress[fullName]" value="<%= userId.username || 'Customer' %>">
+                <input type="hidden" name="shippingAddress[email]" value="<%= userId.email || '' %>">
+                <input type="hidden" name="shippingAddress[phone]" value="<%= userId.phone || '' %>">
+                <input type="hidden" name="shippingAddress[address]" value="Default Address">
+                <input type="hidden" name="shippingAddress[city]" value="Default City">
+                <input type="hidden" name="shippingAddress[state]" value="Default State">
+                <input type="hidden" name="shippingAddress[zipCode]" value="000000">
+                <input type="hidden" name="shippingAddress[country]" value="India">
+                
+                <!-- Default payment method -->
+                <input type="hidden" name="paymentMethod" value="COD">
               
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary w-100">Confirm Purchase</button>

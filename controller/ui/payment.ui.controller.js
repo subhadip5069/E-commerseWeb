@@ -40,9 +40,16 @@ class PaymentController {
             }
 
             if (!shippingAddress || !paymentMethod) {
+                console.log('Missing fields:', { shippingAddress, paymentMethod });
+                console.log('Request body:', req.body);
                 return res.status(400).json({
                     success: false,
-                    message: 'Shipping address and payment method are required'
+                    message: 'Shipping address and payment method are required',
+                    debug: {
+                        hasShippingAddress: !!shippingAddress,
+                        hasPaymentMethod: !!paymentMethod,
+                        receivedFields: Object.keys(req.body)
+                    }
                 });
             }
 
