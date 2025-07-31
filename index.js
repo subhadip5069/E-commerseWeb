@@ -43,10 +43,35 @@ app.use((req, res, next) => {
 });
   
 
-connectDB();
+// Connect to database and initialize defaults
+const startServer = async () => {
+    try {
+        console.log('Starting application initialization...');
+        
+        // Connect to database with timeout
+        await Promise.race([
+            connectDB(),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Database connection timeout')), 15000)
+            )
+        ]);
+        
+        // Initialize default settings and stats after DB connection (non-blocking)
+        initializeDefaults().catch(error => {
+            console.error('Non-critical initialization error:', error);
+            console.log('Application will continue without default initialization');
+        });
+        
+        console.log('Application core initialization completed');
+    } catch (error) {
+        console.error('Critical initialization error:', error);
+        console.log('Attempting to start server anyway...');
+        // Don't exit, let the server try to start
+    }
+};
 
-// Initialize default settings and stats
-initializeDefaults();
+// Start initialization but don't block server startup
+startServer();
 
 app.use(cookieparser());
 
@@ -72,13 +97,48 @@ app.use(injectTemplateVars);
 app.use('/admin', require('./router/Admin/index'));
 
 
+// Health check endpoint for deployment monitoring
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development'
+    });
+});
+
 // ui routes
 app.use('/', userUiRoutes);
 
 
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
-    console.log(`http://localhost:${process.env.PORT}`);
-    console.log(process.env.MONGO_URI);
+const PORT = process.env.PORT || 9000;
+
+const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`http://localhost:${PORT}`);
+    console.log('MongoDB URI:', process.env.MONGO_URI ? 'Connected' : 'Not configured');
+});
+
+// Handle server startup errors
+server.on('error', (error) => {
+    console.error('Server startup error:', error);
+    process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT received, shutting down gracefully');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
 });

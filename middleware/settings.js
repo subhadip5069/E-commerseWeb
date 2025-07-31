@@ -49,23 +49,47 @@ const injectTemplateVars = async (req, res, next) => {
  */
 const initializeDefaults = async () => {
     try {
-        // Check if settings exist
-        const settingsCount = await Settings.countDocuments();
+        console.log('Initializing default settings...');
+        
+        // Check if settings exist with timeout
+        const settingsCount = await Promise.race([
+            Settings.countDocuments(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Settings count timeout')), 5000))
+        ]);
+        
         if (settingsCount === 0) {
-            console.log('Initializing default settings...');
-            await Settings.initializeDefaultSettings();
+            console.log('Creating default settings...');
+            await Promise.race([
+                Settings.initializeDefaultSettings(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Settings init timeout')), 10000))
+            ]);
             console.log('Default settings initialized successfully');
+        } else {
+            console.log(`Found ${settingsCount} existing settings`);
         }
 
-        // Check if stats exist
-        const statsCount = await Stats.countDocuments();
+        // Check if stats exist with timeout
+        const statsCount = await Promise.race([
+            Stats.countDocuments(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Stats count timeout')), 5000))
+        ]);
+        
         if (statsCount === 0) {
-            console.log('Initializing default stats...');
-            await Stats.initializeDefaultStats();
+            console.log('Creating default stats...');
+            await Promise.race([
+                Stats.initializeDefaultStats(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Stats init timeout')), 10000))
+            ]);
             console.log('Default stats initialized successfully');
+        } else {
+            console.log(`Found ${statsCount} existing stats`);
         }
+        
+        console.log('Initialization completed successfully');
     } catch (error) {
         console.error('Error initializing defaults:', error);
+        // Don't throw the error, just log it and continue
+        console.log('Continuing with application startup despite initialization errors');
     }
 };
 
