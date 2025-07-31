@@ -130,10 +130,10 @@
             <span>Admin</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-            <li><a class="dropdown-item" href="#">My Profile</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="/admin/profile">My Profile</a></li>
+            <li><a class="dropdown-item" href="/admin/settings">Settings</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Logout</a></li>
+            <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
           </ul>
         </li>
       </ul>
@@ -172,89 +172,88 @@
             <i class="fa-brands fa-product-hunt"></i> Products
           </a>
           <ul class="dropdown-menu" aria-labelledby="productsDropdown">
-            <li><a class="dropdown-item" href="/admin/product/create">Create Product</a></li>
-            <li><a class="dropdown-item" href="/admin/product/products">List Products</a></li>
+            <li><a class="dropdown-item" href="/admin/product/add">Add Product</a></li>
+            <li><a class="dropdown-item" href="/admin/product">View Products</a></li>
           </ul>
         </li>
       
-        <!-- about -->
-        <li class="nav-item ">
-          <a class="nav-link" href="/admin/about" id="paymentsDropdown" role="button" aria-expanded="false">
+        <!-- About -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/about" id="aboutDropdown" role="button" aria-expanded="false">
             <i class="fa-solid fa-circle-info"></i> About
           </a>
-          <!-- banner -->
-        <li class="nav-item ">
-          <a class="nav-link" href="/admin/banner" id="paymentsDropdown" role="button" aria-expanded="false">
+        </li>
+        
+        <!-- Banner -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/banner" id="bannerDropdown" role="button" aria-expanded="false">
             <i class="fa-regular fa-font-awesome"></i> Banner
           </a>
+        </li>
       
         <!-- Categories -->
-        <li class="nav-item ">
-          <a class="nav-link " href="/admin/category" id="categoriesDropdown" role="button" aria-expanded="false">
-            <i class="fa-solid fa-layer-group"></i>Categories
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/category" id="categoriesDropdown" role="button" aria-expanded="false">
+            <i class="fa-solid fa-layer-group"></i> Categories
           </a>
-         
         </li>
-        <!-- subcategory -->
-         <!-- Categories -->
-        <li class="nav-item ">
-          <a class="nav-link " href="/admin/subcategory" id="paymentsDropdown" role="button" aria-expanded="false">
-            <i class="fa-solid fa-diagram-successor"></i>SubCategories
+        
+        <!-- Subcategories -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/subcategory" id="subcategoriesDropdown" role="button" aria-expanded="false">
+            <i class="fa-solid fa-diagram-successor"></i> Subcategories
           </a>
-         
         </li>
-         <!-- poster -->
-         <li class="nav-item ">
-          <a class="nav-link" href="/admin/poster" id="categoriesDropdown" role="button" aria-expanded="false">
-            <i class="fa-solid fa-diamond"></i> Poster
+        <!-- Offers -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/offers" id="offersDropdown" role="button" aria-expanded="false">
+            <i class="fa-solid fa-tags"></i> Offers
           </a>
-         
         </li>
-        <!-- payments -->
-         
-          <li class="nav-item ">
-            <a class="nav-link " href="/admin/subcategory" id="categoriesDropdown" role="button" aria-expanded="false">
-              <i class="fa-solid fa-diamond"></i>Payments
-            </a>
-           
-          </li>
+        
+        <!-- Posters -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/poster" id="posterDropdown" role="button" aria-expanded="false">
+            <i class="fa-solid fa-diamond"></i> Posters
+          </a>
+        </li>
+        
+        <!-- Payments -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/payments" id="paymentsDropdown" role="button" aria-expanded="false">
+            <i class="fa-solid fa-credit-card"></i> Payments
+          </a>
+        </li>
       
       
         <!-- Orders -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/orders" id="ordersDropdown" role="button" aria-expanded="false">
             <i class="fas fa-shopping-cart"></i> Orders
           </a>
-          <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-            <li><a class="dropdown-item" href="#">Create Order</a></li>
-            <li><a class="dropdown-item" href="#">Update Order</a></li>
-            <li><a class="dropdown-item" href="#">List Orders</a></li>
-          </ul>
         </li>
         
        
       
-        <!-- Coupons -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="couponsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-percentage"></i> Coupons
+        <!-- Contacts -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/contacts" id="contactsDropdown" role="button" aria-expanded="false">
+            <i class="fas fa-envelope"></i> Contacts
           </a>
-          <ul class="dropdown-menu" aria-labelledby="couponsDropdown">
-            <li><a class="dropdown-item" href="#">Create Coupon</a></li>
-            <li><a class="dropdown-item" href="#">Update Coupon</a></li>
-            <li><a class="dropdown-item" href="#">List Coupons</a></li>
-          </ul>
         </li>
-      
-        <!-- Reviews -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="reviewsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-star"></i> Reviews
+        
+        <!-- Users -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/users" id="usersDropdown" role="button" aria-expanded="false">
+            <i class="fas fa-users"></i> Users
           </a>
-          <ul class="dropdown-menu" aria-labelledby="reviewsDropdown">
-            <li><a class="dropdown-item" href="#">View Reviews</a></li>
-            <li><a class="dropdown-item" href="#">Reply to Reviews</a></li>
-          </ul>
+        </li>
+        
+        <!-- Admin Management -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/manage-admins" id="adminManagementDropdown" role="button" aria-expanded="false">
+            <i class="fas fa-user-shield"></i> Admin Management
+          </a>
         </li>
       </ul>
       
