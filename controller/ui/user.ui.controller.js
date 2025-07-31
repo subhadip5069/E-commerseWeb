@@ -116,9 +116,22 @@ class UserUiController {
                 banner: promotionalOffers.filter(offer => offer.sectionType === 'banner')
             };
 
-            // Calculate statistics for admin reference
+            // Calculate statistics for admin reference with timeout
+            let totalProductsCount = 0;
+            try {
+                totalProductsCount = await Promise.race([
+                    Product.countDocuments({ isActive: true }),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Product count timeout')), 3000)
+                    )
+                ]);
+            } catch (error) {
+                console.error('Error counting products:', error.message);
+                totalProductsCount = allProducts.length; // Fallback to array length
+            }
+
             const pageStats = {
-                totalProducts: await Product.countDocuments({ isActive: true }),
+                totalProducts: totalProductsCount,
                 featuredCount: featuredProducts.length,
                 newArrivalCount: newArrivalProducts.length,
                 saleCount: saleProducts.length,
@@ -166,8 +179,12 @@ class UserUiController {
         } catch (error) {
             console.error("Error loading homepage:", error);
             res.status(500).render('error', { 
-                message: "Unable to load homepage", 
-                error: process.env.NODE_ENV === 'development' ? error : {} 
+                status: 500,
+                message: "Unable to load homepage. Please try again later.", 
+                error: process.env.NODE_ENV === 'development' ? error : {},
+                title: "Error",
+                settings: {},
+                stats: []
             });
         }
     };
@@ -388,7 +405,18 @@ class UserUiController {
             const banner = await Banner.Banner.find();
             const categories = await Category.Category.find({});
             const subcategories = await Category.Subcategory.find().populate("category");
-            const totalProducts = await Product.countDocuments();
+            let totalProducts = 0;
+            try {
+                totalProducts = await Promise.race([
+                    Product.countDocuments(),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Product count timeout')), 3000)
+                    )
+                ]);
+            } catch (error) {
+                console.error('Error counting products in listing:', error.message);
+                totalProducts = 0; // Fallback
+            }
             const searchQuery = req.query.query || '';
             const products = await Product.find({ name: new RegExp(searchQuery, 'i') })
                 .populate("category subcategory")

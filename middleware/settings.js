@@ -12,13 +12,33 @@ const injectTemplateVars = async (req, res, next) => {
         // Override render function to inject common variables
         res.render = async function(view, locals = {}, callback) {
             try {
-                // Fetch settings and stats if not already provided
+                // Fetch settings and stats if not already provided with timeout
                 if (!locals.settings) {
-                    locals.settings = await Settings.getAllSettings();
+                    try {
+                        locals.settings = await Promise.race([
+                            Settings.getAllSettings(),
+                            new Promise((_, reject) => 
+                                setTimeout(() => reject(new Error('Settings timeout')), 3000)
+                            )
+                        ]);
+                    } catch (settingsError) {
+                        console.error('Settings fetch error:', settingsError.message);
+                        locals.settings = {}; // Fallback to empty settings
+                    }
                 }
                 
                 if (!locals.stats) {
-                    locals.stats = await Stats.find({ isActive: true }).sort({ sortOrder: 1 });
+                    try {
+                        locals.stats = await Promise.race([
+                            Stats.find({ isActive: true }).sort({ sortOrder: 1 }),
+                            new Promise((_, reject) => 
+                                setTimeout(() => reject(new Error('Stats timeout')), 3000)
+                            )
+                        ]);
+                    } catch (statsError) {
+                        console.error('Stats fetch error:', statsError.message);
+                        locals.stats = []; // Fallback to empty stats
+                    }
                 }
 
                 // Add current year for copyright
@@ -32,7 +52,13 @@ const injectTemplateVars = async (req, res, next) => {
                 return originalRender.call(this, view, locals, callback);
             } catch (error) {
                 console.error('Error injecting template variables:', error);
-                // Fallback to original render if injection fails
+                // Provide fallback values and continue
+                locals.settings = locals.settings || {};
+                locals.stats = locals.stats || [];
+                locals.currentYear = new Date().getFullYear();
+                locals.currentUrl = req.url;
+                locals.currentPath = req.path;
+                
                 return originalRender.call(this, view, locals, callback);
             }
         };

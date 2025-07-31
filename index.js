@@ -103,12 +103,47 @@ app.get('/health', (req, res) => {
         status: 'OK',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development'
+        environment: process.env.NODE_ENV || 'development',
+        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
     });
 });
 
 // ui routes
 app.use('/', userUiRoutes);
+
+// 404 handler
+app.use('*', (req, res) => {
+    res.status(404).render('error', {
+        status: 404,
+        message: 'Page not found',
+        title: 'Error 404',
+        settings: {},
+        stats: []
+    });
+});
+
+// Global error handler
+app.use((error, req, res, next) => {
+    console.error('Global error handler:', error);
+    
+    // Don't crash on database errors
+    if (error.name === 'MongooseError' || error.name === 'MongoError') {
+        console.error('Database error:', error.message);
+    }
+    
+    if (res.headersSent) {
+        return next(error);
+    }
+    
+    res.status(500).render('error', {
+        status: 500,
+        message: 'Something went wrong',
+        title: 'Error 500',
+        settings: {},
+        stats: [],
+        error: process.env.NODE_ENV === 'development' ? error : {}
+    });
+});
 
 
 
