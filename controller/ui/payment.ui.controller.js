@@ -20,8 +20,31 @@ class PaymentController {
                 billingAddress, 
                 paymentMethod, 
                 couponCode,
-                customerNotes 
+                customerNotes,
+                // Flat form fields for shipping address
+                shippingFullName,
+                shippingEmail,
+                shippingPhone,
+                shippingAddress1,
+                shippingCity,
+                shippingState,
+                shippingZipCode,
+                shippingCountry
             } = req.body;
+
+            // Construct shipping address object from flat fields if nested object not provided
+            const finalShippingAddress = shippingAddress || {
+                fullName: shippingFullName || 'Customer',
+                email: shippingEmail || '',
+                phone: shippingPhone || '',
+                address: shippingAddress1 || 'Default Address',
+                city: shippingCity || 'Default City',
+                state: shippingState || 'Default State',
+                zipCode: shippingZipCode || '000000',
+                country: shippingCountry || 'India'
+            };
+
+            const finalPaymentMethod = paymentMethod || 'COD';
 
             // Validate user authentication
             if (!userId) {
@@ -39,16 +62,17 @@ class PaymentController {
                 });
             }
 
-            if (!shippingAddress || !paymentMethod) {
-                console.log('Missing fields:', { shippingAddress, paymentMethod });
+            if (!finalShippingAddress || !finalPaymentMethod) {
+                console.log('Missing fields:', { finalShippingAddress, finalPaymentMethod });
                 console.log('Request body:', req.body);
                 return res.status(400).json({
                     success: false,
                     message: 'Shipping address and payment method are required',
                     debug: {
-                        hasShippingAddress: !!shippingAddress,
-                        hasPaymentMethod: !!paymentMethod,
-                        receivedFields: Object.keys(req.body)
+                        hasShippingAddress: !!finalShippingAddress,
+                        hasPaymentMethod: !!finalPaymentMethod,
+                        receivedFields: Object.keys(req.body),
+                        constructedShippingAddress: finalShippingAddress
                     }
                 });
             }
