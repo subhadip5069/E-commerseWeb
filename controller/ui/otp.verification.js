@@ -38,6 +38,7 @@ signup = async (req, res) => {
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
+      req.flash('error_msg', 'User with this email already exists. Please login instead.');
       return res.redirect("/login");
     }
 
@@ -84,10 +85,12 @@ signup = async (req, res) => {
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
         console.error("Error sending email:", err);
+        req.flash('error_msg', 'Failed to send verification email. Please try again.');
         return res.redirect("/signup");
       }
       console.log("Email sent:", info.response);
       
+      req.flash('success_msg', `Verification code sent to ${email}. Please check your email.`);
       res.render("Ui/verify", {
         email,
         message:  req.flash(),
@@ -95,6 +98,7 @@ signup = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    req.flash('error_msg', 'An error occurred during signup. Please try again.');
     res.redirect("/signup");
   }
 };
@@ -106,6 +110,7 @@ signup = async (req, res) => {
     if (otpData.otp === otp) {
       if (Date.now() > otpData.expiresAt) {
         otpData = { otp: null, expiresAt: null };
+        req.flash('error_msg', 'OTP has expired. Please request a new verification code.');
         return res.render("Ui/verify", { email, message:  req.flash() });
       }
   
@@ -118,17 +123,21 @@ signup = async (req, res) => {
         );
   
         if (!user) {
+          req.flash('error_msg', 'User not found. Please try signing up again.');
           return res.render("Ui/verify", { email, message:  req.flash()});
         }
   
         otpData = { otp: null, expiresAt: null }; // Reset OTP
         console.log("User verified successfully:", user);
+        req.flash('success_msg', 'Email verified successfully! You can now login.');
         res.redirect("/login");
       } catch (error) {
         console.error("Error verifying OTP:", error);
-       res.render("Ui/verify", { email, messages: req.flash()});
+        req.flash('error_msg', 'An error occurred during verification. Please try again.');
+        res.render("Ui/verify", { email, messages: req.flash()});
       }
     } else {
+      req.flash('error_msg', 'Invalid OTP. Please check and try again.');
       res.render("Ui/verify", { email, message:  req.flash()});
     }
   };
@@ -169,7 +178,7 @@ signup = async (req, res) => {
           maxAge: 48 * 60 * 60 * 1000, // 2 day expiry
       });
       
-
+        req.flash("success_msg", `Welcome back, ${user.username}!`);
         return res.redirect("/");
 
     } catch (error) {
@@ -181,6 +190,7 @@ signup = async (req, res) => {
 
   logout = (req, res) => {
     res.clearCookie("token");
+    req.flash("success_msg", "You have been logged out successfully.");
     res.redirect("/login");
     console.log("User logged out.");
   }
