@@ -8,30 +8,42 @@ class CartController {
 
     addToCart = async (req, res) => {
         try {
-            const { productId, quantity,user } = req.body;
+            if (!req.user || !req.user.id) {
+                req.flash('error_msg', 'Please login to add items to cart');
+                return res.redirect("/login");
+            }
+
+            const { productId, quantity } = req.body;
+            
+            if (!productId || !quantity) {
+                req.flash('error_msg', 'Invalid product or quantity');
+                return res.redirect("back");
+            }
     
             const cartItem = await Cart.findOne({
-                user: req.user.id, // ✅ Only use the ID
+                user: req.user.id,
                 product: productId
             });
            
-    
             if (cartItem) {
-                cartItem.quantity = Number(cartItem.quantity) + Number(quantity); // Ensure numbers are added correctly
+                cartItem.quantity = Number(cartItem.quantity) + Number(quantity);
                 await cartItem.save();
+                req.flash('success_msg', 'Item quantity updated in cart');
             } else {
                 await Cart.create({
-                    user: req.user.id, // Pass only the ID
+                    user: req.user.id,
                     product: productId,
-                    quantity: Number(quantity) // Ensure it's stored as a number
+                    quantity: Number(quantity)
                 });
+                req.flash('success_msg', 'Item added to cart successfully');
             }
         
             res.redirect("/cart");
             
-           
         } catch (error) {
-            res.redirect("/login");
+            console.error('Add to cart error:', error);
+            req.flash('error_msg', 'Failed to add item to cart');
+            res.redirect("back");
         }
     };
     // Remove from Cart
@@ -45,11 +57,11 @@ class CartController {
             console.log(deletedItem,"deletedItem");
             
 
-            req.session.success_msg = "Product removed from cart successfully.";
+            req.flash('success_msg' = "Product removed from cart successfully.";
             res.redirect("/cart");
         } catch (error) {
             console.error("Error removing cart item:", error);
-            req.session.error_msg = "Failed to remove product from cart.";
+            req.flash("error_msg" = "Failed to remove product from cart.";
             res.redirect("/login");
         }
     }

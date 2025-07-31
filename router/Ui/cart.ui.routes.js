@@ -6,8 +6,8 @@ const {authMiddleware} = require("../../middleware/Auth")
 
 
 router.post("/create",authMiddleware,cartcontroller.addToCart )
-router.get("/:id",authMiddleware,cartcontroller.removeFromCart)
-router.post("/cart/update-quantity/:id",authMiddleware,cartcontroller.updateCartQuantity)
+router.post("/remove/:id",authMiddleware,cartcontroller.removeFromCart)
+router.post("/update-quantity/:id",authMiddleware,cartcontroller.updateCartQuantity)
 
 
 module.exports = router

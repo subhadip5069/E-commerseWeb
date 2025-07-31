@@ -227,11 +227,16 @@ class UserUiController {
     }
     cart = async (req, res) => {
         try {
+            if (!req.user || !req.user.id) {
+                req.flash("error_msg", "Please login to view your cart");
+                return res.redirect("/login");
+            }
+
             const userId = req.user.id;
     
             if (!mongoose.Types.ObjectId.isValid(userId)) {
                 req.flash("error_msg", "Invalid user ID");
-                return res.redirect("/carts");
+                return res.redirect("/login");
             }
     
             const banner = await Banner.Banner.find();
@@ -241,7 +246,7 @@ class UserUiController {
             const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate("category subcategory");
             
             // Fetch cart items and populate the product field
-            const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
+            const cartItems = await Cart.find({ user: userId }).populate("product");
             console.log("Cart Items Before Filtering:", cartItems);
     
             // Filter out items where product is null
@@ -275,7 +280,7 @@ class UserUiController {
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
             const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate("category subcategory");
-            const cartItems = await Cart.Cart.find({ user: req.user.id }).populate("product");
+            const cartItems = await Cart.find({ user: req.user.id }).populate("product");
             const validCartItems = cartItems.filter(item => item.product !== null);
             console.log(validCartItems);
             console.log(cartItems);
@@ -307,7 +312,7 @@ class UserUiController {
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
     
-            const cartItems = await Cart.Cart.find({ user: new mongoose.Types.ObjectId(userId) }).populate("product");
+            const cartItems = await Cart.find({ user: new mongoose.Types.ObjectId(userId) }).populate("product");
     
             // ✅ Use `Product` model instead of `product` function
             const products = await Product.findById(req.params.id).populate("category subcategory");
@@ -347,7 +352,7 @@ class UserUiController {
             const categories = await Category.Category.find();
             const subcategories = await Category.Subcategory.find().populate("category");
             const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
-            // const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
+            // const cartItems = await Cart.find({ user: userId }).populate("product");
             
             const product = await Product.findById( req.params.id).populate("category subcategory");
             if (!product) {
@@ -537,7 +542,7 @@ class UserUiController {
         const categories = await Category.Category.find();
         const subcategories = await Category.Subcategory.find().populate("category");
         const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
-        const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
+        const cartItems = await Cart.find({ user: userId }).populate("product");
         
         res.render('Ui/bill',{
             title:"Bill",
@@ -566,7 +571,7 @@ class UserUiController {
             const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate("category subcategory");
             console.log("Products:", products);
     
-            const cartItems = await Cart.Cart.find({ user: req.user.id }).populate("product");
+            const cartItems = await Cart.find({ user: req.user.id }).populate("product");
     
             // Fetch orders with proper population
             const orders = await Bill.find({ userid: req.user.id })
@@ -627,7 +632,7 @@ class UserUiController {
         const categories = await Category.Category.find();
         const subcategories = await Category.Subcategory.find().populate("category");
         const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate('category subcategory');
-        const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
+        const cartItems = await Cart.find({ user: userId }).populate("product");
         const profile = await user.findById(userId);
         const addresses = await address.find({ user: userId });
         
@@ -655,7 +660,7 @@ class UserUiController {
             const products = await Product.find({ name: new RegExp(searchQuery, 'i') }).populate("category subcategory");
             console.log("Products:", products);
     
-            const cartItems = await Cart.Cart.find({ user: userId }).populate("product");
+            const cartItems = await Cart.find({ user: userId }).populate("product");
             const orders = await Bill.findById(req.params.id)
             .populate("userid", "name email") 
             .populate({
