@@ -37,7 +37,22 @@ class ProductUIController {
 
     async createProduct(req, res) {
         try {
-          const { name, description, launchingPrice, currentPrice, category, subcategory, stock, ratings } = req.body;
+          const { 
+            name, 
+            description, 
+            launchingPrice, 
+            currentPrice, 
+            category, 
+            subcategory, 
+            stock, 
+            ratings,
+            isFeatured,
+            isNewArrival,
+            isOnSale,
+            sortOrder,
+            seoTitle,
+            seoDescription
+          } = req.body;
           const images = req.files ? req.files.map((file) => file.path) : [];
     
           const Products = new product({
@@ -50,14 +65,23 @@ class ProductUIController {
             stock,
             ratings,
             images,
+            isFeatured: isFeatured === 'true' || isFeatured === 'on',
+            isNewArrival: isNewArrival === 'true' || isNewArrival === 'on',
+            isOnSale: isOnSale === 'true' || isOnSale === 'on',
+            sortOrder: parseInt(sortOrder) || 0,
+            seoTitle: seoTitle || name,
+            seoDescription: seoDescription || description,
+            isActive: true
           });
           
           await Products.save();
           
+          req.flash("success_msg", "Product created successfully!");
           res.redirect('/admin/product/products');
         } catch (error) {
-          console.error(error);
-          res.status(500).json({ message: 'Failed to create product' });
+          console.error("Error creating product:", error);
+          req.flash("error_msg", "Failed to create product");
+          res.redirect('/admin/product/create');
         }
       }
     
