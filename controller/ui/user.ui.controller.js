@@ -118,16 +118,21 @@ class UserUiController {
 
             // Calculate statistics for admin reference with timeout
             let totalProductsCount = 0;
-            try {
-                totalProductsCount = await Promise.race([
-                    Product.countDocuments({ isActive: true }),
-                    new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Product count timeout')), 3000)
-                    )
-                ]);
-            } catch (error) {
-                console.error('Error counting products:', error.message);
-                totalProductsCount = allProducts.length; // Fallback to array length
+            if (mongoose.connection.readyState !== 1) {
+                console.log('Database not connected, using product array length');
+                totalProductsCount = allProducts.length;
+            } else {
+                try {
+                    totalProductsCount = await Promise.race([
+                        Product.countDocuments({ isActive: true }),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Product count timeout')), 3000)
+                        )
+                    ]);
+                } catch (error) {
+                    console.error('Error counting products:', error.message);
+                    totalProductsCount = allProducts.length; // Fallback to array length
+                }
             }
 
             const pageStats = {
@@ -406,16 +411,21 @@ class UserUiController {
             const categories = await Category.Category.find({});
             const subcategories = await Category.Subcategory.find().populate("category");
             let totalProducts = 0;
-            try {
-                totalProducts = await Promise.race([
-                    Product.countDocuments(),
-                    new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Product count timeout')), 3000)
-                    )
-                ]);
-            } catch (error) {
-                console.error('Error counting products in listing:', error.message);
-                totalProducts = 0; // Fallback
+            if (mongoose.connection.readyState !== 1) {
+                console.log('Database not connected, using 0 for product count');
+                totalProducts = 0;
+            } else {
+                try {
+                    totalProducts = await Promise.race([
+                        Product.countDocuments(),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Product count timeout')), 3000)
+                        )
+                    ]);
+                } catch (error) {
+                    console.error('Error counting products in listing:', error.message);
+                    totalProducts = 0; // Fallback
+                }
             }
             const searchQuery = req.query.query || '';
             const products = await Product.find({ name: new RegExp(searchQuery, 'i') })

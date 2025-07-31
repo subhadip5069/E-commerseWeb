@@ -1,5 +1,11 @@
 const Settings = require('../model/settings');
 const Stats = require('../model/stats');
+const mongoose = require('mongoose');
+
+// Helper function to check if database is connected
+const isDatabaseConnected = () => {
+    return mongoose.connection.readyState === 1;
+};
 
 /**
  * Middleware to inject common template variables (settings, stats) into all views
@@ -14,30 +20,40 @@ const injectTemplateVars = async (req, res, next) => {
             try {
                 // Fetch settings and stats if not already provided with timeout
                 if (!locals.settings) {
-                    try {
-                        locals.settings = await Promise.race([
-                            Settings.getAllSettings(),
-                            new Promise((_, reject) => 
-                                setTimeout(() => reject(new Error('Settings timeout')), 3000)
-                            )
-                        ]);
-                    } catch (settingsError) {
-                        console.error('Settings fetch error:', settingsError.message);
-                        locals.settings = {}; // Fallback to empty settings
+                    if (!isDatabaseConnected()) {
+                        console.log('Database not connected, using empty settings');
+                        locals.settings = {};
+                    } else {
+                        try {
+                            locals.settings = await Promise.race([
+                                Settings.getAllSettings(),
+                                new Promise((_, reject) => 
+                                    setTimeout(() => reject(new Error('Settings timeout')), 3000)
+                                )
+                            ]);
+                        } catch (settingsError) {
+                            console.error('Settings fetch error:', settingsError.message);
+                            locals.settings = {}; // Fallback to empty settings
+                        }
                     }
                 }
                 
                 if (!locals.stats) {
-                    try {
-                        locals.stats = await Promise.race([
-                            Stats.find({ isActive: true }).sort({ sortOrder: 1 }),
-                            new Promise((_, reject) => 
-                                setTimeout(() => reject(new Error('Stats timeout')), 3000)
-                            )
-                        ]);
-                    } catch (statsError) {
-                        console.error('Stats fetch error:', statsError.message);
-                        locals.stats = []; // Fallback to empty stats
+                    if (!isDatabaseConnected()) {
+                        console.log('Database not connected, using empty stats');
+                        locals.stats = [];
+                    } else {
+                        try {
+                            locals.stats = await Promise.race([
+                                Stats.find({ isActive: true }).sort({ sortOrder: 1 }),
+                                new Promise((_, reject) => 
+                                    setTimeout(() => reject(new Error('Stats timeout')), 3000)
+                                )
+                            ]);
+                        } catch (statsError) {
+                            console.error('Stats fetch error:', statsError.message);
+                            locals.stats = []; // Fallback to empty stats
+                        }
                     }
                 }
 

@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 });
   
 
-// Connect to database and initialize defaults
+// Connect to database and initialize defaults before starting server
 const startServer = async () => {
     try {
         console.log('Starting application initialization...');
@@ -52,9 +52,11 @@ const startServer = async () => {
         await Promise.race([
             connectDB(),
             new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Database connection timeout')), 15000)
+                setTimeout(() => reject(new Error('Database connection timeout')), 30000)
             )
         ]);
+        
+        console.log('Database connected successfully');
         
         // Initialize default settings and stats after DB connection (non-blocking)
         initializeDefaults().catch(error => {
@@ -63,14 +65,47 @@ const startServer = async () => {
         });
         
         console.log('Application core initialization completed');
+        
+        // Start the server only after database is connected
+        const PORT = process.env.PORT || 9000;
+        
+        const server = app.listen(PORT, '0.0.0.0', () => {
+            console.log(`Server is running on port ${PORT}`);
+            console.log(`http://localhost:${PORT}`);
+            console.log('MongoDB URI:', process.env.MONGO_URI ? 'Connected' : 'Not configured');
+        });
+        
+        // Handle server startup errors
+        server.on('error', (error) => {
+            console.error('Server startup error:', error);
+            process.exit(1);
+        });
+        
+        // Graceful shutdown
+        process.on('SIGTERM', () => {
+            console.log('SIGTERM received, shutting down gracefully');
+            server.close(() => {
+                console.log('Server closed');
+                process.exit(0);
+            });
+        });
+        
+        process.on('SIGINT', () => {
+            console.log('SIGINT received, shutting down gracefully');
+            server.close(() => {
+                console.log('Server closed');
+                process.exit(0);
+            });
+        });
+        
     } catch (error) {
         console.error('Critical initialization error:', error);
-        console.log('Attempting to start server anyway...');
-        // Don't exit, let the server try to start
+        console.log('Failed to start server due to database connection issues');
+        process.exit(1);
     }
 };
 
-// Start initialization but don't block server startup
+// Start initialization and server
 startServer();
 
 app.use(cookieparser());
@@ -147,33 +182,4 @@ app.use((error, req, res, next) => {
 
 
 
-const PORT = process.env.PORT || 9000;
-
-const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`http://localhost:${PORT}`);
-    console.log('MongoDB URI:', process.env.MONGO_URI ? 'Connected' : 'Not configured');
-});
-
-// Handle server startup errors
-server.on('error', (error) => {
-    console.error('Server startup error:', error);
-    process.exit(1);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-    console.log('SIGTERM received, shutting down gracefully');
-    server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-    });
-});
-
-process.on('SIGINT', () => {
-    console.log('SIGINT received, shutting down gracefully');
-    server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-    });
-});
+// Server startup is now handled in the startServer() function above
