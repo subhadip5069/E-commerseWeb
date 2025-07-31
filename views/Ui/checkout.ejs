@@ -10,23 +10,61 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Razorpay SDK -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    
-    <!-- Stripe SDK -->
-    <script src="https://js.stripe.com/v3/"></script>
-    
-    <!-- PayPal SDK -->
-    <script src="https://www.paypal.com/sdk/js?client-id=<%= process.env.PAYPAL_CLIENT_ID || 'your-paypal-client-id' %>&currency=USD"></script>
-    
     <style>
-        .payment-method {
+        .checkout-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .checkout-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            margin: 0;
+        }
+        
+        .address-card {
             border: 2px solid #e9ecef;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
             margin-bottom: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .address-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 5px 15px rgba(0,123,255,0.1);
+        }
+        
+        .address-card.selected {
+            border-color: #007bff;
+            background-color: #f8f9ff;
+        }
+        
+        .address-card .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .payment-method {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
         }
         
         .payment-method:hover,
@@ -40,231 +78,466 @@
         }
         
         .payment-method .icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 10px;
+            color: #6c757d;
+        }
+        
+        .payment-method.selected .icon {
+            color: #007bff;
         }
         
         .order-summary {
             background: #f8f9fa;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
+            position: sticky;
+            top: 20px;
         }
         
-        .btn-payment {
-            height: 50px;
+        .btn-checkout {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 15px 30px;
             font-size: 1.1rem;
             font-weight: 600;
+            border-radius: 10px;
+            color: white;
+            width: 100%;
         }
         
-        .loading {
-            display: none;
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         
-        .payment-logos img {
-            height: 30px;
-            margin: 0 5px;
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 12px 16px;
         }
         
-        .secure-badge {
-            color: #28a745;
-            font-size: 0.9rem;
+        .form-control:focus, .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+        
+        .modal-content {
+            border-radius: 15px;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: #dee2e6;
+            z-index: 1;
+        }
+        
+        .step.active:not(:last-child)::after {
+            background: #007bff;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step.active .step-circle {
+            background: #007bff;
+            color: white;
+        }
+        
+        .step.completed .step-circle {
+            background: #28a745;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container my-5">
-        <div class="row">
-            <!-- Order Summary -->
-            <div class="col-lg-5 order-lg-2 mb-4">
-                <div class="order-summary">
-                    <h4 class="mb-3">
-                        <span class="text-primary">Order Summary</span>
-                        <span class="badge bg-primary rounded-pill"><%= cart.length %></span>
-                    </h4>
-                    
-                    <!-- Order Items -->
-                    <ul class="list-group mb-3">
-                        <% cart.forEach(item => { %>
-                            <li class="list-group-item d-flex justify-content-between lh-sm">
-                                <div>
-                                    <h6 class="my-0"><%= item.product.name %></h6>
-                                    <small class="text-muted">Qty: <%= item.quantity %></small>
+    <div class="checkout-container">
+        <div class="container">
+            <!-- Flash Messages -->
+            <% if (success_msg && success_msg.length > 0) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+            
+            <% if (error_msg && error_msg.length > 0) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="step-label">Cart</div>
+                </div>
+                <div class="step active">
+                    <div class="step-circle">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="step-label">Address</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Main Checkout Form -->
+                <div class="col-lg-8">
+                    <div class="checkout-card">
+                        <form id="checkoutForm" action="/payment/create-order" method="POST">
+                            
+                            <!-- Shipping Address Section -->
+                            <div class="section-header">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    Shipping Address
+                                </h4>
+                            </div>
+                            
+                            <div class="p-4">
+                                <div class="row">
+                                    <% if (addresses && addresses.length > 0) { %>
+                                        <div class="col-12">
+                                            <h6 class="mb-3">Select an Address:</h6>
+                                            <% addresses.forEach((address, index) => { %>
+                                                <div class="address-card" data-address-id="<%= address._id %>">
+                                                    <input type="radio" name="selectedAddress" value="<%= address._id %>" 
+                                                           id="address_<%= index %>" <%= address.isDefault ? 'checked' : '' %>>
+                                                    <label for="address_<%= index %>" class="w-100">
+                                                        <% if (address.isDefault) { %>
+                                                            <span class="badge bg-primary">Default</span>
+                                                        <% } %>
+                                                        <div class="fw-bold"><%= address.fullName || user.username %></div>
+                                                        <div class="text-muted mb-2"><%= address.phone || address.phnumber %></div>
+                                                        <div><%= address.address %></div>
+                                                        <div><%= address.city %>, <%= address.state %> - <%= address.pincode %></div>
+                                                        <div><%= address.country %></div>
+                                                        <div class="mt-2">
+                                                            <button type="button" class="btn btn-sm btn-outline-primary me-2" 
+                                                                    onclick="editAddress('<%= address._id %>')">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                    onclick="deleteAddress('<%= address._id %>')">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </button>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="col-12">
+                                            <div class="alert alert-info">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                No saved addresses found. Please add a new address.
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                    
+                                    <div class="col-12 mt-3">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                                            <i class="fas fa-plus me-2"></i>Add New Address
+                                        </button>
+                                    </div>
                                 </div>
-                                <span class="text-muted">₹<%= (item.product.currentPrice * item.quantity).toLocaleString() %></span>
-                            </li>
-                        <% }); %>
+                            </div>
+
+                            <!-- Payment Method Section -->
+                            <div class="section-header">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-credit-card me-2"></i>
+                                    Payment Method
+                                </h4>
+                            </div>
+                            
+                            <div class="p-4">
+                                <div class="row">
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="payment-method" data-payment="cod">
+                                            <input type="radio" name="paymentMethod" value="COD" id="cod" checked>
+                                            <label for="cod" class="w-100">
+                                                <div class="icon">
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                </div>
+                                                <div class="fw-bold">Cash on Delivery</div>
+                                                <div class="text-muted small">Pay when you receive</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="payment-method" data-payment="razorpay">
+                                            <input type="radio" name="paymentMethod" value="razorpay" id="razorpay">
+                                            <label for="razorpay" class="w-100">
+                                                <div class="icon">
+                                                    <i class="fab fa-cc-visa"></i>
+                                                </div>
+                                                <div class="fw-bold">Razorpay</div>
+                                                <div class="text-muted small">Cards, UPI, Wallets</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="payment-method" data-payment="stripe">
+                                            <input type="radio" name="paymentMethod" value="stripe" id="stripe">
+                                            <label for="stripe" class="w-100">
+                                                <div class="icon">
+                                                    <i class="fab fa-stripe"></i>
+                                                </div>
+                                                <div class="fw-bold">Stripe</div>
+                                                <div class="text-muted small">International Cards</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hidden form fields for cart items -->
+                            <% cartItems.forEach((item, index) => { %>
+                                <input type="hidden" name="items[<%= index %>][product]" value="<%= item.product._id %>">
+                                <input type="hidden" name="items[<%= index %>][quantity]" value="<%= item.quantity %>">
+                                <input type="hidden" name="items[<%= index %>][price]" value="<%= item.product.currentPrice %>">
+                            <% }); %>
+                            
+                            <!-- Hidden fields for pricing -->
+                            <input type="hidden" name="subtotal" value="<%= pricing.subtotal %>">
+                            <input type="hidden" name="gst" value="<%= pricing.gst %>">
+                            <input type="hidden" name="sgst" value="<%= pricing.sgst %>">
+                            <input type="hidden" name="shipping" value="<%= pricing.shipping %>">
+                            <input type="hidden" name="total" value="<%= pricing.total %>">
+                            
+                            <!-- Hidden fields for address (will be populated by JavaScript) -->
+                            <input type="hidden" name="shippingFullName" id="hiddenFullName">
+                            <input type="hidden" name="shippingEmail" id="hiddenEmail" value="<%= user.email %>">
+                            <input type="hidden" name="shippingPhone" id="hiddenPhone">
+                            <input type="hidden" name="shippingAddress1" id="hiddenAddress">
+                            <input type="hidden" name="shippingCity" id="hiddenCity">
+                            <input type="hidden" name="shippingState" id="hiddenState">
+                            <input type="hidden" name="shippingZipCode" id="hiddenPincode">
+                            <input type="hidden" name="shippingCountry" id="hiddenCountry">
+
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                    <div class="order-summary">
+                        <h5 class="mb-4">
+                            <i class="fas fa-receipt me-2"></i>
+                            Order Summary
+                        </h5>
                         
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Subtotal</span>
-                            <strong>₹<%= subtotal.toLocaleString() %></strong>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Tax (18%)</span>
-                            <strong>₹<%= tax.toLocaleString() %></strong>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Shipping</span>
-                            <strong>₹<%= shipping.toLocaleString() %></strong>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span><strong>Total</strong></span>
-                            <strong>₹<%= total.toLocaleString() %></strong>
-                        </li>
-                    </ul>
-                    
-                    <div class="secure-badge text-center">
-                        <i class="fas fa-shield-alt"></i>
-                        <small>Secure SSL Encrypted Payment</small>
+                        <!-- Cart Items -->
+                        <div class="mb-4">
+                            <% cartItems.forEach(item => { %>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <% if (item.product.images && item.product.images.length > 0) { %>
+                                            <img src="/<%= item.product.images[0] %>" alt="<%= item.product.name %>" 
+                                                 class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <% } %>
+                                        <div>
+                                            <div class="fw-bold"><%= item.product.name %></div>
+                                            <div class="text-muted small">Qty: <%= item.quantity %></div>
+                                        </div>
+                                    </div>
+                                    <div class="fw-bold">₹<%= (item.product.currentPrice * item.quantity).toFixed(2) %></div>
+                                </div>
+                            <% }); %>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Price Breakdown -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Subtotal:</span>
+                                <span>₹<%= pricing.subtotal.toFixed(2) %></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>GST (5%):</span>
+                                <span>₹<%= pricing.gst.toFixed(2) %></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>SGST (5%):</span>
+                                <span>₹<%= pricing.sgst.toFixed(2) %></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Shipping:</span>
+                                <span>
+                                    <% if (pricing.shipping === 0) { %>
+                                        <span class="text-success">FREE</span>
+                                    <% } else { %>
+                                        ₹<%= pricing.shipping.toFixed(2) %>
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Total:</strong>
+                            <strong class="text-primary">₹<%= pricing.total.toFixed(2) %></strong>
+                        </div>
+                        
+                        <button type="submit" form="checkoutForm" class="btn-checkout" id="placeOrderBtn">
+                            <i class="fas fa-lock me-2"></i>
+                            Place Order Securely
+                        </button>
+                        
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Your payment information is secure and encrypted
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Checkout Form -->
-            <div class="col-lg-7 order-lg-1">
-                <h2 class="mb-4">Checkout</h2>
-                
-                <form id="checkoutForm">
-                    <!-- Shipping Address -->
-                    <div class="mb-4">
-                        <h4 class="mb-3">Shipping Address</h4>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="firstName" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+        </div>
+    </div>
+
+    <!-- Add Address Modal -->
+    <div class="modal fade" id="addAddressModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus me-2"></i>
+                        Add New Address
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAddressForm" action="/checkout/address/add" method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fullName" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="fullName" name="fullName" 
+                                       value="<%= user.username %>" required>
                             </div>
-                            <div class="col-md-6">
-                                <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       value="<%= user.phone %>" required>
                             </div>
-                            <div class="col-12">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" value="<%= user?.email || '' %>" required>
+                            <div class="col-12 mb-3">
+                                <label for="address" class="form-label">Address *</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
                             </div>
-                            <div class="col-12">
-                                <label for="phone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" value="<%= user?.phone || '' %>" required>
-                            </div>
-                            <div class="col-12">
-                                <label for="address" class="form-label">Address</label>
-                                <input type="text" class="form-control" id="address" name="addressLine1" placeholder="1234 Main St" required>
-                            </div>
-                            <div class="col-12">
-                                <label for="address2" class="form-label">Address 2 <span class="text-muted">(Optional)</span></label>
-                                <input type="text" class="form-control" id="address2" name="addressLine2" placeholder="Apartment or suite">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="city" class="form-label">City</label>
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">City *</label>
                                 <input type="text" class="form-control" id="city" name="city" required>
                             </div>
-                            <div class="col-md-4">
-                                <label for="state" class="form-label">State</label>
-                                <select class="form-select" id="state" name="state" required>
-                                    <option value="">Choose...</option>
-                                    <option value="Delhi">Delhi</option>
-                                    <option value="Maharashtra">Maharashtra</option>
-                                    <option value="Karnataka">Karnataka</option>
-                                    <option value="Tamil Nadu">Tamil Nadu</option>
-                                    <!-- Add more states -->
-                                </select>
+                            <div class="col-md-6 mb-3">
+                                <label for="state" class="form-label">State *</label>
+                                <input type="text" class="form-control" id="state" name="state" required>
                             </div>
-                            <div class="col-md-4">
-                                <label for="pincode" class="form-label">Pincode</label>
-                                <input type="text" class="form-control" id="pincode" name="postalCode" required>
+                            <div class="col-md-6 mb-3">
+                                <label for="pincode" class="form-label">PIN Code *</label>
+                                <input type="text" class="form-control" id="pincode" name="pincode" required>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <hr class="my-4">
-                    
-                    <!-- Payment Methods -->
-                    <div class="mb-4">
-                        <h4 class="mb-3">Payment Method</h4>
-                        
-                        <!-- Razorpay -->
-                        <div class="payment-method" data-method="razorpay">
-                            <input type="radio" name="paymentMethod" value="razorpay" id="razorpay">
-                            <div class="d-flex align-items-center">
-                                <div class="icon text-primary me-3">
-                                    <i class="fas fa-credit-card"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">Razorpay</h6>
-                                    <small class="text-muted">Credit/Debit Card, Net Banking, UPI, Wallets</small>
-                                    <div class="payment-logos mt-2">
-                                        <img src="https://cdn.razorpay.com/static/assets/logo/payment.svg" alt="Payment Methods">
-                                    </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="country" class="form-label">Country *</label>
+                                <input type="text" class="form-control" id="country" name="country" value="India" required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="isDefault" name="isDefault">
+                                    <label class="form-check-label" for="isDefault">
+                                        Set as default address
+                                    </label>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Stripe -->
-                        <div class="payment-method" data-method="stripe">
-                            <input type="radio" name="paymentMethod" value="stripe" id="stripe">
-                            <div class="d-flex align-items-center">
-                                <div class="icon text-primary me-3">
-                                    <i class="fab fa-stripe-s"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">Stripe</h6>
-                                    <small class="text-muted">International Credit/Debit Cards</small>
-                                    <div class="payment-logos mt-2">
-                                        <img src="https://js.stripe.com/v3/fingerprinted/img/visa-365725566f9578a9589553aa9296d178.svg" alt="Visa">
-                                        <img src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg" alt="Mastercard">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- PayPal -->
-                        <div class="payment-method" data-method="paypal">
-                            <input type="radio" name="paymentMethod" value="paypal" id="paypal">
-                            <div class="d-flex align-items-center">
-                                <div class="icon text-primary me-3">
-                                    <i class="fab fa-paypal"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">PayPal</h6>
-                                    <small class="text-muted">Pay with your PayPal account</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Cash on Delivery -->
-                        <div class="payment-method" data-method="cod">
-                            <input type="radio" name="paymentMethod" value="cod" id="cod">
-                            <div class="d-flex align-items-center">
-                                <div class="icon text-success me-3">
-                                    <i class="fas fa-money-bill-wave"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">Cash on Delivery</h6>
-                                    <small class="text-muted">Pay when your order is delivered</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <hr class="my-4">
-                    
-                    <!-- Place Order Button -->
-                    <button type="submit" class="btn btn-primary btn-lg w-100 btn-payment" id="placeOrderBtn">
-                        <span class="btn-text">Place Order - ₹<%= total.toLocaleString() %></span>
-                        <span class="loading">
-                            <i class="fas fa-spinner fa-spin"></i> Processing...
-                        </span>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="addAddressForm" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Address
                     </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-    
-    <!-- PayPal Container -->
-    <div id="paypal-button-container" style="display: none;"></div>
-    
-    <!-- Scripts -->
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        // Address selection
+        document.querySelectorAll('.address-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Check the radio button
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                    updateHiddenAddressFields();
+                }
+            });
+        });
+
         // Payment method selection
         document.querySelectorAll('.payment-method').forEach(method => {
             method.addEventListener('click', function() {
@@ -276,246 +549,86 @@
                 
                 // Check the radio button
                 const radio = this.querySelector('input[type="radio"]');
-                radio.checked = true;
-                
-                // Handle PayPal specific UI
-                if (radio.value === 'paypal') {
-                    document.getElementById('placeOrderBtn').style.display = 'none';
-                    document.getElementById('paypal-button-container').style.display = 'block';
-                    initializePayPal();
-                } else {
-                    document.getElementById('placeOrderBtn').style.display = 'block';
-                    document.getElementById('paypal-button-container').style.display = 'none';
+                if (radio) {
+                    radio.checked = true;
                 }
             });
         });
-        
-        // Form submission
-        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+
+        // Update hidden address fields based on selected address
+        function updateHiddenAddressFields() {
+            const selectedAddressId = document.querySelector('input[name="selectedAddress"]:checked')?.value;
+            if (selectedAddressId) {
+                const addresses = <%- JSON.stringify(addresses) %>;
+                const selectedAddress = addresses.find(addr => addr._id === selectedAddressId);
+                
+                if (selectedAddress) {
+                    document.getElementById('hiddenFullName').value = selectedAddress.fullName || '<%= user.username %>';
+                    document.getElementById('hiddenPhone').value = selectedAddress.phone || selectedAddress.phnumber;
+                    document.getElementById('hiddenAddress').value = selectedAddress.address;
+                    document.getElementById('hiddenCity').value = selectedAddress.city;
+                    document.getElementById('hiddenState').value = selectedAddress.state;
+                    document.getElementById('hiddenPincode').value = selectedAddress.pincode;
+                    document.getElementById('hiddenCountry').value = selectedAddress.country;
+                }
+            }
+        }
+
+        // Initialize with default address
+        updateHiddenAddressFields();
+
+        // Form validation
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
             
-            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-            if (!selectedPaymentMethod) {
+            if (!selectedAddress) {
+                e.preventDefault();
+                alert('Please select a shipping address');
+                return;
+            }
+            
+            if (!selectedPayment) {
+                e.preventDefault();
                 alert('Please select a payment method');
                 return;
             }
             
-            // Show loading state
-            const btn = document.getElementById('placeOrderBtn');
-            btn.querySelector('.btn-text').style.display = 'none';
-            btn.querySelector('.loading').style.display = 'inline';
-            btn.disabled = true;
-            
-            try {
-                // Collect form data
-                const formData = new FormData(this);
-                const orderData = {
-                    items: <%= JSON.stringify(cart.map(item => ({productId: item.product._id, quantity: item.quantity}))) %>,
-                    shippingAddress: {
-                        name: `${formData.get('firstName')} ${formData.get('lastName')}`,
-                        email: formData.get('email'),
-                        phone: formData.get('phone'),
-                        addressLine1: formData.get('addressLine1'),
-                        addressLine2: formData.get('addressLine2'),
-                        city: formData.get('city'),
-                        state: formData.get('state'),
-                        postalCode: formData.get('postalCode'),
-                        country: 'India'
-                    },
-                    paymentMethod: selectedPaymentMethod.value
-                };
-                
-                // Create order
-                const response = await fetch('/payment/create-order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(orderData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    if (result.redirectUrl) {
-                        // For COD, redirect directly
-                        window.location.href = result.redirectUrl;
-                    } else {
-                        // Handle payment gateway
-                        await handlePaymentGateway(selectedPaymentMethod.value, result);
-                    }
-                } else {
-                    throw new Error(result.message || 'Failed to create order');
-                }
-                
-            } catch (error) {
-                console.error('Order creation error:', error);
-                alert('Error creating order: ' + error.message);
-                
-                // Reset button state
-                btn.querySelector('.btn-text').style.display = 'inline';
-                btn.querySelector('.loading').style.display = 'none';
-                btn.disabled = false;
-            }
+            // Update hidden fields before submission
+            updateHiddenAddressFields();
         });
-        
-        // Handle different payment gateways
-        async function handlePaymentGateway(method, orderResult) {
-            switch (method) {
-                case 'razorpay':
-                    handleRazorpayPayment(orderResult);
-                    break;
-                case 'stripe':
-                    handleStripePayment(orderResult);
-                    break;
-                case 'paypal':
-                    // PayPal is handled separately
-                    break;
-                default:
-                    throw new Error('Unsupported payment method');
-            }
-        }
-        
-        // Razorpay payment handler
-        function handleRazorpayPayment(orderResult) {
-            const options = {
-                key: '<%= process.env.RAZORPAY_KEY_ID %>',
-                amount: orderResult.amount * 100,
-                currency: orderResult.currency,
-                order_id: orderResult.gatewayData.id,
-                name: 'E-Commerce Store',
-                description: `Order #${orderResult.orderNumber}`,
-                prefill: {
-                    email: document.getElementById('email').value,
-                    contact: document.getElementById('phone').value
-                },
-                theme: {
-                    color: '#007bff'
-                },
-                handler: async function(response) {
-                    await verifyPayment({
-                        paymentId: orderResult.paymentId,
-                        gateway: 'razorpay',
-                        gatewayPaymentId: response.razorpay_payment_id,
-                        gatewayOrderId: response.razorpay_order_id,
-                        signature: response.razorpay_signature
-                    });
-                },
-                modal: {
-                    ondismiss: function() {
-                        resetButton();
-                    }
-                }
-            };
-            
-            const rzp = new Razorpay(options);
-            rzp.open();
-        }
-        
-        // Stripe payment handler
-        async function handleStripePayment(orderResult) {
-            const stripe = Stripe('<%= process.env.STRIPE_PUBLISHABLE_KEY %>');
-            
-            const { error } = await stripe.confirmPayment({
-                clientSecret: orderResult.clientSecret,
-                confirmParams: {
-                    return_url: `${window.location.origin}/payment/success?paymentId=${orderResult.paymentId}`
-                }
-            });
-            
-            if (error) {
-                console.error('Stripe payment error:', error);
-                alert('Payment failed: ' + error.message);
-                resetButton();
-            }
-        }
-        
-        // PayPal initialization
-        function initializePayPal() {
-            document.getElementById('paypal-button-container').innerHTML = '';
-            
-            paypal.Buttons({
-                createOrder: async function(data, actions) {
-                    // Create order first
-                    const formData = new FormData(document.getElementById('checkoutForm'));
-                    const orderData = {
-                        items: <%= JSON.stringify(cart.map(item => ({productId: item.product._id, quantity: item.quantity}))) %>,
-                        shippingAddress: {
-                            name: `${formData.get('firstName')} ${formData.get('lastName')}`,
-                            email: formData.get('email'),
-                            phone: formData.get('phone'),
-                            addressLine1: formData.get('addressLine1'),
-                            addressLine2: formData.get('addressLine2'),
-                            city: formData.get('city'),
-                            state: formData.get('state'),
-                            postalCode: formData.get('postalCode'),
-                            country: 'India'
-                        },
-                        paymentMethod: 'paypal'
-                    };
-                    
-                    const response = await fetch('/payment/create-order', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(orderData)
-                    });
-                    
-                    const result = await response.json();
-                    if (result.success) {
-                        return result.gatewayData.id;
-                    } else {
-                        throw new Error(result.message);
-                    }
-                },
-                onApprove: async function(data, actions) {
-                    await verifyPayment({
-                        paymentId: data.paymentId,
-                        gateway: 'paypal',
-                        gatewayPaymentId: data.paymentID,
-                        gatewayOrderId: data.orderID
-                    });
-                },
-                onError: function(err) {
-                    console.error('PayPal error:', err);
-                    alert('Payment failed');
-                }
-            }).render('#paypal-button-container');
-        }
-        
-        // Verify payment
-        async function verifyPayment(paymentData) {
-            try {
-                const response = await fetch('/payment/verify-payment', {
-                    method: 'POST',
+
+        // Delete address function
+        function deleteAddress(addressId) {
+            if (confirm('Are you sure you want to delete this address?')) {
+                fetch(`/checkout/address/${addressId}`, {
+                    method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(paymentData)
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Failed to delete address');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to delete address');
                 });
-                
-                const result = await response.json();
-                
-                if (result.success && result.verified) {
-                    window.location.href = result.redirectUrl;
-                } else {
-                    throw new Error(result.error || 'Payment verification failed');
-                }
-            } catch (error) {
-                console.error('Payment verification error:', error);
-                alert('Payment verification failed: ' + error.message);
-                resetButton();
             }
         }
-        
-        // Reset button state
-        function resetButton() {
-            const btn = document.getElementById('placeOrderBtn');
-            btn.querySelector('.btn-text').style.display = 'inline';
-            btn.querySelector('.loading').style.display = 'none';
-            btn.disabled = false;
-        }
+
+        // Auto-dismiss alerts
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
     </script>
 </body>
 </html>

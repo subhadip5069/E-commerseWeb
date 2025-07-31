@@ -8,6 +8,14 @@ const addressSchema = new Schema({
         ref: "User",
         required: true
     },
+    fullName: {
+        type: String,
+        required: false
+    },
+    phone: {
+        type: String,
+        required: false
+    },
     address: {
         type: String,
         required: true
@@ -31,6 +39,10 @@ const addressSchema = new Schema({
     phnumber: {
         type: Number,
         required: true
+    },
+    isDefault: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 
