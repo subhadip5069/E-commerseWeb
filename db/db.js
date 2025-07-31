@@ -4,7 +4,6 @@ const connectDB = async () => {
     try {
         // Set mongoose options globally
         mongoose.set('bufferCommands', false);
-        mongoose.set('bufferMaxEntries', 0);
         
         const conn = await mongoose.connect(process.env.MONGO_URI, {
             serverSelectionTimeoutMS: 30000, // 30 second timeout
