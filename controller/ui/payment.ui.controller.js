@@ -89,9 +89,9 @@ class PaymentController {
                 userId,
                 items: orderCalculation.items,
                 pricing: orderCalculation.pricing,
-                shippingAddress,
-                billingAddress: billingAddress || shippingAddress,
-                paymentMethod,
+                shippingAddress: finalShippingAddress,
+                billingAddress: billingAddress || finalShippingAddress,
+                paymentMethod: finalPaymentMethod,
                 coupon: orderCalculation.coupon,
                 customerNotes,
                 source: 'web',
@@ -105,7 +105,7 @@ class PaymentController {
             await order.save();
 
             // If COD, mark order as confirmed and skip payment gateway
-            if (paymentMethod === 'cod') {
+            if (finalPaymentMethod === 'cod') {
                 order.paymentStatus = 'pending';
                 order.status = 'confirmed';
                 await order.save();
@@ -124,14 +124,14 @@ class PaymentController {
 
             // Create payment order for other gateways
             const paymentOrderData = {
-                gateway: paymentMethod,
+                gateway: finalPaymentMethod,
                 amount: orderCalculation.pricing.total,
                 currency: process.env.DEFAULT_CURRENCY || 'INR',
                 orderId: order._id,
                 userId,
                 metadata: {
-                    customerEmail: shippingAddress.email,
-                    customerPhone: shippingAddress.phone,
+                    customerEmail: finalShippingAddress.email,
+                    customerPhone: finalShippingAddress.phone,
                     ipAddress: req.ip,
                     userAgent: req.get('User-Agent')
                 }
