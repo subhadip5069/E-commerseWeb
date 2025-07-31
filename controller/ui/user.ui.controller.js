@@ -21,7 +21,7 @@ class UserUiController {
             const userId = req.user;
             const searchQuery = req.query.query || '';
 
-            // Fetch all dynamic data in parallel for better performance
+            // Fetch all dynamic data in parallel for better performance with error handling
             const [
                 heroBanners,
                 promotionalOffers,
@@ -32,29 +32,29 @@ class UserUiController {
                 saleProducts,
                 allProducts,
                 banners,
-                stats,
+                websiteStats,
                 settings
             ] = await Promise.all([
                 // Hero banners for main carousel
                 HeroBanner.find({ 
                     isActive: true, 
                     displayType: 'hero' 
-                }).sort({ sortOrder: 1 }),
+                }).sort({ sortOrder: 1 }).catch(() => []),
 
                 // Promotional offers for banner sections
                 Offers.find({ 
                     isActive: true,
                     validFrom: { $lte: new Date() },
                     validTo: { $gte: new Date() }
-                }).sort({ sectionType: 1, sortOrder: 1 }),
+                }).sort({ sectionType: 1, sortOrder: 1 }).catch(() => []),
 
                 // Categories for navigation
-                Category.Category.find({ isActive: { $ne: false } }).sort({ sortOrder: 1, name: 1 }),
+                Category.Category.find({ isActive: { $ne: false } }).sort({ sortOrder: 1, name: 1 }).catch(() => []),
 
                 // Subcategories for navigation
                 Category.Subcategory.find({ isActive: { $ne: false } })
                     .populate("category")
-                    .sort({ sortOrder: 1, name: 1 }),
+                    .sort({ sortOrder: 1, name: 1 }).catch(() => []),
 
                 // Featured products section
                 Product.find({ 
@@ -63,7 +63,7 @@ class UserUiController {
                     stock: { $gt: 0 }
                 }).populate('category subcategory')
                   .sort({ sortOrder: 1, createdAt: -1 })
-                  .limit(8),
+                  .limit(8).catch(() => []),
 
                 // New arrival products
                 Product.find({ 
@@ -72,7 +72,7 @@ class UserUiController {
                     stock: { $gt: 0 }
                 }).populate('category subcategory')
                   .sort({ createdAt: -1 })
-                  .limit(8),
+                  .limit(8).catch(() => []),
 
                 // Sale products
                 Product.find({ 
@@ -81,7 +81,7 @@ class UserUiController {
                     stock: { $gt: 0 }
                 }).populate('category subcategory')
                   .sort({ sortOrder: 1, createdAt: -1 })
-                  .limit(8),
+                  .limit(8).catch(() => []),
 
                 // All products for search functionality
                 searchQuery 
@@ -92,20 +92,20 @@ class UserUiController {
                             { description: new RegExp(searchQuery, 'i') }
                         ]
                       }).populate('category subcategory')
-                        .sort({ isFeatured: -1, createdAt: -1 })
+                        .sort({ isFeatured: -1, createdAt: -1 }).catch(() => [])
                     : Product.find({ isActive: true })
                         .populate('category subcategory')
                         .sort({ isFeatured: -1, isNewArrival: -1, createdAt: -1 })
-                        .limit(20),
+                        .limit(20).catch(() => []),
 
                 // Legacy banner support
-                Banner.Banner.find({ isActive: { $ne: false } }).sort({ sortOrder: 1 }),
+                Banner.Banner.find({ isActive: { $ne: false } }).sort({ sortOrder: 1 }).catch(() => []),
 
                 // Website statistics
-                Stats.find({ isActive: true }).sort({ sortOrder: 1 }),
+                Stats.find({ isActive: true }).sort({ sortOrder: 1 }).catch(() => []),
 
                 // Website settings
-                Settings.getAllSettings()
+                Settings.getAllSettings().catch(() => ({}))
             ]);
 
             // Group promotional offers by section type
@@ -117,7 +117,7 @@ class UserUiController {
             };
 
             // Calculate statistics for admin reference
-            const stats = {
+            const pageStats = {
                 totalProducts: await Product.countDocuments({ isActive: true }),
                 featuredCount: featuredProducts.length,
                 newArrivalCount: newArrivalProducts.length,
@@ -148,7 +148,7 @@ class UserUiController {
                 subcategory: subcategories,
                 
                 // Statistics (can be used in admin or for conditional rendering)
-                stats,
+                stats: websiteStats,
                 
                 // Website settings
                 settings,
