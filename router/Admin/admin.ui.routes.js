@@ -14,4 +14,4 @@ router.get('/logout', (req, res) => {
 // router.get('/category',adminUiController.getCategoryWithSubcategories)
 
 
-module.exports = routerrouter.get("/logout", (req, res) => { res.clearCookie("token"); res.redirect("/admin/"); });
+module.exports = router
