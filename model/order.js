@@ -258,7 +258,7 @@ const orderSchema = new mongoose.Schema({
 
 // Indexes for better performance
 orderSchema.index({ userId: 1, createdAt: -1 });
-orderSchema.index({ orderNumber: 1 });
+// Removed duplicate index - orderNumber field already has unique: true
 orderSchema.index({ status: 1 });
 orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ 'shippingAddress.email': 1 });

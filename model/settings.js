@@ -69,7 +69,7 @@ const settingsSchema = new mongoose.Schema({
 });
 
 // Indexes for better performance
-settingsSchema.index({ key: 1 });
+// Note: key field already has unique: true which creates an index
 settingsSchema.index({ category: 1, isActive: 1 });
 
 // Method to get settings by category

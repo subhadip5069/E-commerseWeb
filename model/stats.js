@@ -51,7 +51,7 @@ const statsSchema = new mongoose.Schema({
 });
 
 // Indexes for better performance
-statsSchema.index({ key: 1 });
+// Removed duplicate index - key field already has unique: true
 statsSchema.index({ isActive: 1, sortOrder: 1 });
 
 // Methods to automatically calculate stats
