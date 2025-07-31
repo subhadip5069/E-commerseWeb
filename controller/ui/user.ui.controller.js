@@ -6,8 +6,9 @@ const Cart = require("../../model/cart");
 const mongoose = require("mongoose");
 const address = require("../../model/address");
 const user = require("../../model/user");
-// const product = require("../../model/product");
 const { Bill } = require("../../model/bill");
+const HeroBanner = require("../../model/heroBanner");
+const Offers = require("../../model/offers");
 
 
 class UserUiController {
@@ -31,13 +32,13 @@ class UserUiController {
                 banners
             ] = await Promise.all([
                 // Hero banners for main carousel
-                require('../../model/heroBanner').find({ 
+                HeroBanner.find({ 
                     isActive: true, 
                     displayType: 'hero' 
                 }).sort({ sortOrder: 1 }),
 
                 // Promotional offers for banner sections
-                require('../../model/offers').find({ 
+                Offers.find({ 
                     isActive: true,
                     validFrom: { $lte: new Date() },
                     validTo: { $gte: new Date() }
