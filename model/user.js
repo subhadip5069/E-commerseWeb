@@ -43,6 +43,54 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    loginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    accountLocked: {
+      type: Boolean,
+      default: false,
+    },
+    lockUntil: {
+      type: Date,
+    },
+    lastLogin: {
+      type: Date,
+    },
+    passwordChangedAt: {
+      type: Date,
+    },
+    loginHistory: [{
+      timestamp: {
+        type: Date,
+        default: Date.now,
+      },
+      ipAddress: {
+        type: String,
+      },
+      userAgent: {
+        type: String,
+      },
+    }],
+    twoFactorSecret: {
+      type: String,
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+    },
+    emailVerificationExpires: {
+      type: Date,
+    },
+    passwordResetToken: {
+      type: String,
+    },
+    passwordResetExpires: {
+      type: Date,
+    },
   },
   { timestamps: true }  // Automatically manage createdAt and updatedAt
 );
