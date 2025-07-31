@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - <%= title %></title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <!-- Stripe SDK -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=<%= process.env.PAYPAL_CLIENT_ID || 'your-paypal-client-id' %>&currency=USD"></script>
+    
+    <style>
+        .payment-method {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method:hover,
+        .payment-method.selected {
+            border-color: #007bff;
+            background-color: #f8f9ff;
+        }
+        
+        .payment-method input[type="radio"] {
+            display: none;
+        }
+        
+        .payment-method .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .btn-payment {
+            height: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .payment-logos img {
+            height: 30px;
+            margin: 0 5px;
+        }
+        
+        .secure-badge {
+            color: #28a745;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <div class="row">
+            <!-- Order Summary -->
+            <div class="col-lg-5 order-lg-2 mb-4">
+                <div class="order-summary">
+                    <h4 class="mb-3">
+                        <span class="text-primary">Order Summary</span>
+                        <span class="badge bg-primary rounded-pill"><%= cart.length %></span>
+                    </h4>
+                    
+                    <!-- Order Items -->
+                    <ul class="list-group mb-3">
+                        <% cart.forEach(item => { %>
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                    <h6 class="my-0"><%= item.product.name %></h6>
+                                    <small class="text-muted">Qty: <%= item.quantity %></small>
+                                </div>
+                                <span class="text-muted">₹<%= (item.product.currentPrice * item.quantity).toLocaleString() %></span>
+                            </li>
+                        <% }); %>
+                        
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Subtotal</span>
+                            <strong>₹<%= subtotal.toLocaleString() %></strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Tax (18%)</span>
+                            <strong>₹<%= tax.toLocaleString() %></strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Shipping</span>
+                            <strong>₹<%= shipping.toLocaleString() %></strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span><strong>Total</strong></span>
+                            <strong>₹<%= total.toLocaleString() %></strong>
+                        </li>
+                    </ul>
+                    
+                    <div class="secure-badge text-center">
+                        <i class="fas fa-shield-alt"></i>
+                        <small>Secure SSL Encrypted Payment</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Checkout Form -->
+            <div class="col-lg-7 order-lg-1">
+                <h2 class="mb-4">Checkout</h2>
+                
+                <form id="checkoutForm">
+                    <!-- Shipping Address -->
+                    <div class="mb-4">
+                        <h4 class="mb-3">Shipping Address</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="<%= user?.email || '' %>" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="<%= user?.phone || '' %>" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="address" name="addressLine1" placeholder="1234 Main St" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="address2" class="form-label">Address 2 <span class="text-muted">(Optional)</span></label>
+                                <input type="text" class="form-control" id="address2" name="addressLine2" placeholder="Apartment or suite">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="state" class="form-label">State</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="">Choose...</option>
+                                    <option value="Delhi">Delhi</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <!-- Add more states -->
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="pincode" class="form-label">Pincode</label>
+                                <input type="text" class="form-control" id="pincode" name="postalCode" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Payment Methods -->
+                    <div class="mb-4">
+                        <h4 class="mb-3">Payment Method</h4>
+                        
+                        <!-- Razorpay -->
+                        <div class="payment-method" data-method="razorpay">
+                            <input type="radio" name="paymentMethod" value="razorpay" id="razorpay">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-primary me-3">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Razorpay</h6>
+                                    <small class="text-muted">Credit/Debit Card, Net Banking, UPI, Wallets</small>
+                                    <div class="payment-logos mt-2">
+                                        <img src="https://cdn.razorpay.com/static/assets/logo/payment.svg" alt="Payment Methods">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stripe -->
+                        <div class="payment-method" data-method="stripe">
+                            <input type="radio" name="paymentMethod" value="stripe" id="stripe">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-primary me-3">
+                                    <i class="fab fa-stripe-s"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Stripe</h6>
+                                    <small class="text-muted">International Credit/Debit Cards</small>
+                                    <div class="payment-logos mt-2">
+                                        <img src="https://js.stripe.com/v3/fingerprinted/img/visa-365725566f9578a9589553aa9296d178.svg" alt="Visa">
+                                        <img src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg" alt="Mastercard">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PayPal -->
+                        <div class="payment-method" data-method="paypal">
+                            <input type="radio" name="paymentMethod" value="paypal" id="paypal">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-primary me-3">
+                                    <i class="fab fa-paypal"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">PayPal</h6>
+                                    <small class="text-muted">Pay with your PayPal account</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cash on Delivery -->
+                        <div class="payment-method" data-method="cod">
+                            <input type="radio" name="paymentMethod" value="cod" id="cod">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-success me-3">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Cash on Delivery</h6>
+                                    <small class="text-muted">Pay when your order is delivered</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Place Order Button -->
+                    <button type="submit" class="btn btn-primary btn-lg w-100 btn-payment" id="placeOrderBtn">
+                        <span class="btn-text">Place Order - ₹<%= total.toLocaleString() %></span>
+                        <span class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> Processing...
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PayPal Container -->
+    <div id="paypal-button-container" style="display: none;"></div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                // Remove selected class from all methods
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                
+                // Add selected class to clicked method
+                this.classList.add('selected');
+                
+                // Check the radio button
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                
+                // Handle PayPal specific UI
+                if (radio.value === 'paypal') {
+                    document.getElementById('placeOrderBtn').style.display = 'none';
+                    document.getElementById('paypal-button-container').style.display = 'block';
+                    initializePayPal();
+                } else {
+                    document.getElementById('placeOrderBtn').style.display = 'block';
+                    document.getElementById('paypal-button-container').style.display = 'none';
+                }
+            });
+        });
+        
+        // Form submission
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method');
+                return;
+            }
+            
+            // Show loading state
+            const btn = document.getElementById('placeOrderBtn');
+            btn.querySelector('.btn-text').style.display = 'none';
+            btn.querySelector('.loading').style.display = 'inline';
+            btn.disabled = true;
+            
+            try {
+                // Collect form data
+                const formData = new FormData(this);
+                const orderData = {
+                    items: <%= JSON.stringify(cart.map(item => ({productId: item.product._id, quantity: item.quantity}))) %>,
+                    shippingAddress: {
+                        name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+                        email: formData.get('email'),
+                        phone: formData.get('phone'),
+                        addressLine1: formData.get('addressLine1'),
+                        addressLine2: formData.get('addressLine2'),
+                        city: formData.get('city'),
+                        state: formData.get('state'),
+                        postalCode: formData.get('postalCode'),
+                        country: 'India'
+                    },
+                    paymentMethod: selectedPaymentMethod.value
+                };
+                
+                // Create order
+                const response = await fetch('/payment/create-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.redirectUrl) {
+                        // For COD, redirect directly
+                        window.location.href = result.redirectUrl;
+                    } else {
+                        // Handle payment gateway
+                        await handlePaymentGateway(selectedPaymentMethod.value, result);
+                    }
+                } else {
+                    throw new Error(result.message || 'Failed to create order');
+                }
+                
+            } catch (error) {
+                console.error('Order creation error:', error);
+                alert('Error creating order: ' + error.message);
+                
+                // Reset button state
+                btn.querySelector('.btn-text').style.display = 'inline';
+                btn.querySelector('.loading').style.display = 'none';
+                btn.disabled = false;
+            }
+        });
+        
+        // Handle different payment gateways
+        async function handlePaymentGateway(method, orderResult) {
+            switch (method) {
+                case 'razorpay':
+                    handleRazorpayPayment(orderResult);
+                    break;
+                case 'stripe':
+                    handleStripePayment(orderResult);
+                    break;
+                case 'paypal':
+                    // PayPal is handled separately
+                    break;
+                default:
+                    throw new Error('Unsupported payment method');
+            }
+        }
+        
+        // Razorpay payment handler
+        function handleRazorpayPayment(orderResult) {
+            const options = {
+                key: '<%= process.env.RAZORPAY_KEY_ID %>',
+                amount: orderResult.amount * 100,
+                currency: orderResult.currency,
+                order_id: orderResult.gatewayData.id,
+                name: 'E-Commerce Store',
+                description: `Order #${orderResult.orderNumber}`,
+                prefill: {
+                    email: document.getElementById('email').value,
+                    contact: document.getElementById('phone').value
+                },
+                theme: {
+                    color: '#007bff'
+                },
+                handler: async function(response) {
+                    await verifyPayment({
+                        paymentId: orderResult.paymentId,
+                        gateway: 'razorpay',
+                        gatewayPaymentId: response.razorpay_payment_id,
+                        gatewayOrderId: response.razorpay_order_id,
+                        signature: response.razorpay_signature
+                    });
+                },
+                modal: {
+                    ondismiss: function() {
+                        resetButton();
+                    }
+                }
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.open();
+        }
+        
+        // Stripe payment handler
+        async function handleStripePayment(orderResult) {
+            const stripe = Stripe('<%= process.env.STRIPE_PUBLISHABLE_KEY %>');
+            
+            const { error } = await stripe.confirmPayment({
+                clientSecret: orderResult.clientSecret,
+                confirmParams: {
+                    return_url: `${window.location.origin}/payment/success?paymentId=${orderResult.paymentId}`
+                }
+            });
+            
+            if (error) {
+                console.error('Stripe payment error:', error);
+                alert('Payment failed: ' + error.message);
+                resetButton();
+            }
+        }
+        
+        // PayPal initialization
+        function initializePayPal() {
+            document.getElementById('paypal-button-container').innerHTML = '';
+            
+            paypal.Buttons({
+                createOrder: async function(data, actions) {
+                    // Create order first
+                    const formData = new FormData(document.getElementById('checkoutForm'));
+                    const orderData = {
+                        items: <%= JSON.stringify(cart.map(item => ({productId: item.product._id, quantity: item.quantity}))) %>,
+                        shippingAddress: {
+                            name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+                            email: formData.get('email'),
+                            phone: formData.get('phone'),
+                            addressLine1: formData.get('addressLine1'),
+                            addressLine2: formData.get('addressLine2'),
+                            city: formData.get('city'),
+                            state: formData.get('state'),
+                            postalCode: formData.get('postalCode'),
+                            country: 'India'
+                        },
+                        paymentMethod: 'paypal'
+                    };
+                    
+                    const response = await fetch('/payment/create-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        return result.gatewayData.id;
+                    } else {
+                        throw new Error(result.message);
+                    }
+                },
+                onApprove: async function(data, actions) {
+                    await verifyPayment({
+                        paymentId: data.paymentId,
+                        gateway: 'paypal',
+                        gatewayPaymentId: data.paymentID,
+                        gatewayOrderId: data.orderID
+                    });
+                },
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+                    alert('Payment failed');
+                }
+            }).render('#paypal-button-container');
+        }
+        
+        // Verify payment
+        async function verifyPayment(paymentData) {
+            try {
+                const response = await fetch('/payment/verify-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(paymentData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.verified) {
+                    window.location.href = result.redirectUrl;
+                } else {
+                    throw new Error(result.error || 'Payment verification failed');
+                }
+            } catch (error) {
+                console.error('Payment verification error:', error);
+                alert('Payment verification failed: ' + error.message);
+                resetButton();
+            }
+        }
+        
+        // Reset button state
+        function resetButton() {
+            const btn = document.getElementById('placeOrderBtn');
+            btn.querySelector('.btn-text').style.display = 'inline';
+            btn.querySelector('.loading').style.display = 'none';
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
