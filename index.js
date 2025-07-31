@@ -17,10 +17,15 @@ app.use(flash());
 
 app.use(
     session({
-      secret: "your_secret_key", // Replace with a secure key
+      secret: process.env.SESSION_SECRET || "fallback_secret_change_in_production",
       resave: false,
       saveUninitialized: false,
-      cookie: { maxAge: 3600000 }, // 1-hour session
+      cookie: { 
+        maxAge: parseInt(process.env.COOKIE_MAX_AGE) || 3600000,
+        secure: process.env.COOKIE_SECURE === 'true',
+        httpOnly: true,
+        sameSite: 'strict'
+      },
     })
   );
   // / Middleware to make flash messages available in templates

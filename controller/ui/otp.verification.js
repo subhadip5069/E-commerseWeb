@@ -16,14 +16,17 @@ function generateOTP() {
 
 // Nodemailer setup
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST||"smtp.gmail.com",
-  port: parseInt(process.env.EMAIL_PORT),  // Convert port to number
-  secure: process.env.EMAIL_SECURE === "true",  // true for port 465, false for 587
+const transporter = nodemailer.createTransporter({
+  host: process.env.EMAIL_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.EMAIL_PORT) || 587,
+  secure: process.env.EMAIL_SECURE === "true",
   auth: {
-    user: process.env.EMAIL_USER||"rahulshop4560000@gmail.com",
-    pass: process.env.EMAIL_PASS ||"mnju jqzp vwqn qkmg",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
   class UserAuthController {
