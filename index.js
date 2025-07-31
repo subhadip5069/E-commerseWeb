@@ -13,8 +13,6 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(flash());
-
 app.use(
     session({
       secret: process.env.SESSION_SECRET || "fallback_secret_change_in_production",
@@ -28,14 +26,20 @@ app.use(
       },
     })
   );
-  // / Middleware to make flash messages available in templates
-  app.use((req, res, next) => {
-    res.locals.success_msg = req.session.success_msg || null;
-    res.locals.error_msg = req.session.error_msg || null;
-    req.session.success_msg = null;
-    req.session.error_msg = null;
-    next();
-  });
+
+// Initialize flash middleware after session
+app.use(flash());
+
+// Middleware to make flash messages available in templates
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
+  res.locals.info_msg = req.flash('info_msg');
+  res.locals.warning_msg = req.flash('warning_msg');
+  next();
+});
   
 
 connectDB();
