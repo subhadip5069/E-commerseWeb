@@ -10,27 +10,39 @@ const addressSchema = new Schema({
     },
     fullName: {
         type: String,
-        required: false
+        required: true,
+        trim: true
     },
     phone: {
         type: String,
-        required: false
+        required: true,
+        trim: true
     },
     address: {
         type: String,
-        required: true
+        required: true,
+        trim: true
+    },
+    landmark: {
+        type: String,
+        trim: true,
+        default: ''
     },
     city: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     state: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     country: {
         type: String,
-        required: true
+        required: true,
+        default: 'India',
+        trim: true
     },
     pincode: {
         type: Number,
@@ -40,9 +52,18 @@ const addressSchema = new Schema({
         type: Number,
         required: true
     },
+    addressType: {
+        type: String,
+        enum: ['Home', 'Work', 'Other'],
+        default: 'Home'
+    },
     isDefault: {
         type: Boolean,
         default: false
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, { timestamps: true });
 

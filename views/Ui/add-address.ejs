@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .form-container {
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin: 20px 0;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .form-header h3 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            color: white;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background: #6c757d;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            color: white;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .btn-cancel:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .address-type-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .address-type-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .address-type-option.selected {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        
+        .address-type-option i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partial/header') %>
+    
+    <div class="form-container">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/addresses">My Addresses</a></li>
+                    <li class="breadcrumb-item active">Add New Address</li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-xl-6">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h3><i class="fas fa-map-marker-alt me-2"></i>Add New Address</h3>
+                            <p class="text-muted">Fill in the details below to add a new delivery address</p>
+                        </div>
+
+                        <!-- Flash Messages -->
+                        <% if (success_msg && success_msg.length > 0) { %>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i><%= success_msg %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <% } %>
+                        
+                        <% if (error_msg && error_msg.length > 0) { %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i><%= error_msg %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <% } %>
+
+                        <form action="/addresses/add" method="POST" id="addAddressForm">
+                            <input type="hidden" name="redirectTo" value="<%= redirectTo %>">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fullName" class="form-label">Full Name <span class="required">*</span></label>
+                                    <input type="text" class="form-control" id="fullName" name="fullName" 
+                                           value="<%= user ? user.username : '' %>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">Phone Number <span class="required">*</span></label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           value="<%= user ? user.phone : '' %>" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address (Area and Street) <span class="required">*</span></label>
+                                <textarea class="form-control" id="address" name="address" rows="2" 
+                                          placeholder="House No, Building, Company, Apartment" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="landmark" class="form-label">Landmark (Optional)</label>
+                                <input type="text" class="form-control" id="landmark" name="landmark" 
+                                       placeholder="E.g. Near City Hospital, Behind Mall">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label">City <span class="required">*</span></label>
+                                    <input type="text" class="form-control" id="city" name="city" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="state" class="form-label">State <span class="required">*</span></label>
+                                    <input type="text" class="form-control" id="state" name="state" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="pincode" class="form-label">PIN Code <span class="required">*</span></label>
+                                    <input type="text" class="form-control" id="pincode" name="pincode" 
+                                           pattern="[0-9]{6}" maxlength="6" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="country" class="form-label">Country</label>
+                                    <input type="text" class="form-control" id="country" name="country" value="India" readonly>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Address Type</label>
+                                <div class="address-type-options">
+                                    <div class="address-type-option selected" data-type="Home">
+                                        <i class="fas fa-home"></i>
+                                        <div>Home</div>
+                                    </div>
+                                    <div class="address-type-option" data-type="Work">
+                                        <i class="fas fa-briefcase"></i>
+                                        <div>Work</div>
+                                    </div>
+                                    <div class="address-type-option" data-type="Other">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <div>Other</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="addressType" id="addressType" value="Home">
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="isDefault" name="isDefault">
+                                    <label class="form-check-label" for="isDefault">
+                                        Set as default address
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <a href="<%= redirectTo %>" class="btn-cancel">
+                                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn-submit">
+                                        <i class="fas fa-save me-2"></i>Save Address
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partial/footer') %>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Address type selection
+        document.querySelectorAll('.address-type-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.address-type-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Update hidden input
+                document.getElementById('addressType').value = this.dataset.type;
+            });
+        });
+
+        // PIN code validation
+        document.getElementById('pincode').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Phone number validation
+        document.getElementById('phone').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Form validation
+        document.getElementById('addAddressForm').addEventListener('submit', function(e) {
+            const pincode = document.getElementById('pincode').value;
+            const phone = document.getElementById('phone').value;
+            
+            if (pincode.length !== 6) {
+                e.preventDefault();
+                alert('PIN code must be 6 digits');
+                return;
+            }
+            
+            if (phone.length < 10) {
+                e.preventDefault();
+                alert('Phone number must be at least 10 digits');
+                return;
+            }
+        });
+
+        // Auto-dismiss alerts
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
