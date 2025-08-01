@@ -134,6 +134,9 @@ app.use('/admin', require('./router/Admin/index'));
 // vendor routes
 app.use('/vendor', require('./router/vendor/index'));
 
+// panel routes (overview of all features)
+app.use('/panel', require('./router/panel.routes'));
+
 // Health check endpoint for deployment monitoring
 app.get('/health', (req, res) => {
     res.status(200).json({
