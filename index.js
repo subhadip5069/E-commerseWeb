@@ -131,6 +131,8 @@ app.use(injectTemplateVars);
 // admin routes
 app.use('/admin', require('./router/Admin/index'));
 
+// vendor routes
+app.use('/vendor', require('./router/vendor/index'));
 
 // Health check endpoint for deployment monitoring
 app.get('/health', (req, res) => {
