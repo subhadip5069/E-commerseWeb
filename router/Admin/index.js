@@ -14,6 +14,7 @@ app.use('/user',require('./users.ui.routes'))
 app.use('/contact',require('./contact.js'))
 app.use('/booking',require('./bookings.ui.routes'))
 app.use('/auth',require('./auth.routes'))
+app.use('/vendors',require('./vendor.routes'))
 
 
 

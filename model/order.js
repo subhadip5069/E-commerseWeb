@@ -23,6 +23,11 @@ const orderSchema = new mongoose.Schema({
             ref: 'Product',
             required: true
         },
+        vendorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Vendor',
+            required: false // Can be null for admin products
+        },
         quantity: {
             type: Number,
             required: true,
@@ -33,6 +38,10 @@ const orderSchema = new mongoose.Schema({
             required: true,
             min: 0
         },
+        vendorCommission: {
+            type: Number,
+            default: 0 // Commission amount for this item
+        },
         // Snapshot of product details at time of order
         productSnapshot: {
             name: String,
@@ -40,8 +49,22 @@ const orderSchema = new mongoose.Schema({
             images: [String],
             sku: String,
             category: String,
-            subcategory: String
-        }
+            subcategory: String,
+            vendor: {
+                businessName: String,
+                ownerName: String,
+                email: String
+            }
+        },
+        // Item-level status for multi-vendor orders
+        itemStatus: {
+            type: String,
+            enum: ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
+            default: 'Pending'
+        },
+        trackingNumber: String,
+        estimatedDelivery: Date,
+        actualDelivery: Date
     }],
     
     // Order amounts
